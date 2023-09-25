@@ -110,6 +110,7 @@ function go_run() {
         const srvRoute = new Map();
         srvRoute.set('/', './pages/home');
         srvRoute.set('/about', './pages/about');
+        srvRoute.set('/product', './pages/product');
         if (srvRoute.has(url_obj.pathname)) {
             const v_route = yield Promise.resolve(`${srvRoute.get(url_obj.pathname)}`).then(s => __importStar(require(s)));
             //const a_body = v_route.getBodyPages();      // работает

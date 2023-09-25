@@ -92,6 +92,7 @@ function go_run() {
     const srvRoute = new Map();
     srvRoute.set('/', './pages/home');
     srvRoute.set('/about', './pages/about');
+    srvRoute.set('/product', './pages/product');
 
     if (srvRoute.has(url_obj.pathname)) {
 

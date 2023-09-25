@@ -1,9 +1,3 @@
-export function getBodyPages(a_url:string) {
-    const a_title = "ООО Рога "+a_url;
-
-    return   `<div><h1>About: ${a_title}</h1><div>`
-
-}
 
 export class BodyPage {
     srv_url
@@ -13,6 +7,6 @@ export class BodyPage {
     }
 
     get_body() {
-        return `HOME page ${this.srv_url}`;
+        return `<h1>HOME page: ${this.srv_url}</h1>`;
     }
 }

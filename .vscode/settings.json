@@ -1,4 +1,5 @@
 {
     "eslint.format.enable": true,
-    "eslint.onIgnoredFiles": "off"
+    "eslint.onIgnoredFiles": "off",
+    "git.ignoreLimitWarning": true
 }

@@ -17,12 +17,12 @@ class defaultPage {
         const a_tel = "8-800-88-98=87";
         const result = `
         "ооо рога и копыта", tel:${a_tel}
-        <p><a href="/"><img src="/assets/img/imgTop.gif" 
-         width="100" height="100" alt="To home"></a>
-            ссылка домой</p>
-            <p><a href="/about?id=8"><img src="/assets/img/imgAbout.png" 
-            width="100" height="100" alt="To About"></a>
-               ссылка about</p>`;
+        <a href="/"><img src="/assets/img/imgTop.gif" 
+         width="100" height="100" alt="To home">home</a>
+        <a href="/about"><img src="/assets/img/imgAbout.png" 
+            width="100" height="100" alt="To About">about</a>
+        <a href="/product?id=2">product</a>
+        `;
         return result;
     }
     get_glMidLeft() {
