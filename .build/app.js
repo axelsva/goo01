@@ -44,6 +44,7 @@ const path_1 = __importDefault(require("path"));
 const _default_js_1 = require("./pages/_default.js");
 const url_1 = __importDefault(require("url"));
 function go_run() {
+    console.log("go_rungo_rungo_rungo_rungo_rungo_run");
     const options = {
         key: fs_1.default.readFileSync('./key/key.pem'),
         cert: fs_1.default.readFileSync('./key/cert.pem'),

@@ -18,6 +18,7 @@ import url from 'url';
 
 function go_run() {
 
+  console.log("go_rungo_rungo_rungo_rungo_rungo_run")
 
   const options = {
     key: fs.readFileSync('./key/key.pem'),
