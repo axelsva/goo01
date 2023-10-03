@@ -43,25 +43,42 @@ const path_1 = __importDefault(require("path"));
 //import {BodyParser}  from 'body-parser'
 const _default_js_1 = require("./pages/_default.js");
 const url_1 = __importDefault(require("url"));
+const querystring_1 = __importDefault(require("querystring"));
 function go_run() {
-    console.log("go_rungo_rungo_rungo_rungo_rungo_run");
     const options = {
         key: fs_1.default.readFileSync('./key/key.pem'),
         cert: fs_1.default.readFileSync('./key/cert.pem'),
     };
     https_1.default.createServer(options, (req, res) => __awaiter(this, void 0, void 0, function* () {
+        if (req.method == 'POST') {
+            let body = '';
+            req.on('data', function (data) {
+                body += data;
+                // 1e6 === 1 * Math.pow(10, 6) === 1 * 1000000 ~~~ 1MB
+                if (body.length > 1e6) {
+                    // FLOOD ATTACK OR FAULTY CLIENT, NUKE REQUEST
+                    // return throw.console.error();
+                    return;
+                    // req.connection.destroy();
+                }
+            });
+            req.on('end', function () {
+                let POST = querystring_1.default.parse(body);
+                console.log("POST", POST);
+                // use POST
+            });
+        }
+        ;
         const url_obj = url_1.default.parse("" + req.url, true);
         console.log(JSON.stringify(url_obj));
-        //static resource
         const action = "" + url_obj.pathname;
         // Path Refinements
         const filePath = path_1.default.join(__dirname, action).split("%20").join(" ");
         //let filePath = path.join('.', action).split("%20").join(" ");
         const ext = path_1.default.extname(action);
-        //filePath = "./assets/img/imgTop.png";
         console.log('FP ---', __dirname, filePath, ext);
         if (ext) {
-            console.log('static --------------');
+            //console.log('static --------------');
             // Checking if the path exists
             fs_1.default.exists(filePath, function (exists) {
                 // if (!exists) {
@@ -101,17 +118,18 @@ function go_run() {
                     }
                     res.writeHead(200, { "Content-Type": contentType });
                     res.end(content);
-                    console.log('static --------------OK');
+                    //console.log('static --------------OK');
                     return;
                 });
             });
-            console.log('gggggggggggggggggggg');
+            //console.log('gggggggggggggggggggg');
             return;
         }
         const srvRoute = new Map();
         srvRoute.set('/', './pages/home');
         srvRoute.set('/about', './pages/about');
         srvRoute.set('/product', './pages/product');
+        srvRoute.set('/init', './pages/init');
         if (srvRoute.has(url_obj.pathname)) {
             const v_route = yield Promise.resolve(`${srvRoute.get(url_obj.pathname)}`).then(s => __importStar(require(s)));
             //const a_body = v_route.getBodyPages();      // работает

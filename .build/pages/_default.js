@@ -22,6 +22,7 @@ class defaultPage {
         <a href="/about"><img src="/assets/img/imgAbout.png" 
             width="100" height="100" alt="To About">about</a>
         <a href="/product?id=2">product</a>
+        <a href="/init">init</a>
         `;
         return result;
     }
