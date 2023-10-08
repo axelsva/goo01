@@ -1,12 +1,10 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.BodyPage = void 0;
-class BodyPage {
-    constructor(a_url) {
-        this.srv_url = a_url;
-    }
-    get_body() {
-        return `<h1>ABOUT page: ${this.srv_url}</h1>`;
-    }
+exports.get_body = void 0;
+function get_body(param_obj) {
+    return `
+        <h1>ABOUT page</h1>
+        <div class='debug'>${JSON.stringify(param_obj)}</div>
+        `;
 }
-exports.BodyPage = BodyPage;
+exports.get_body = get_body;

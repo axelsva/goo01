@@ -1,19 +1,18 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.defaultPage = void 0;
-const pageTemplate = `<head>
+exports.getPage = void 0;
+function getPage(url_obj) {
+    const pageTemplate = `
+    <head>
 <link rel="stylesheet" type="text/css" href="/assets/css/style.css"></head>
 <div class="glTop">[glTop]</div>
 <div class="glMidle">
     <div class="glMidLeft ">[glMidLeft]</div>
     <div class="glMidRight">[glMidRight]</div>
 </div>
-<div class="glBottom">[glBottom]</div>`;
-class defaultPage {
-    constructor(url_obj) {
-        this.url_obj = url_obj;
-    }
-    get_glTop() {
+<div class="glBottom">[glBottom]</div>
+`;
+    function get_glTop() {
         const a_tel = "8-800-88-98=87";
         const result = `
         "ооо рога и копыта", tel:${a_tel}
@@ -26,22 +25,20 @@ class defaultPage {
         `;
         return result;
     }
-    get_glMidLeft() {
+    function get_glMidLeft() {
         return `Левая планка`;
     }
-    get_glMidRight() {
+    function get_glMidRight() {
         return `[glMidRight]`;
     }
-    get_glBottom() {
-        return `Это подвал:${JSON.stringify(this.url_obj)}`;
+    function get_glBottom() {
+        return `Это подвал:${JSON.stringify(url_obj)}`;
     }
-    getPage() {
-        let a_page = pageTemplate;
-        a_page = a_page.replace("[glTop]", this.get_glTop());
-        a_page = a_page.replace("[glMidLeft]", this.get_glMidLeft());
-        a_page = a_page.replace("[glMidRight]", this.get_glMidRight());
-        a_page = a_page.replace("[glBottom]", this.get_glBottom());
-        return a_page;
-    }
+    let a_page = pageTemplate;
+    a_page = a_page.replace("[glTop]", get_glTop());
+    a_page = a_page.replace("[glMidLeft]", get_glMidLeft());
+    a_page = a_page.replace("[glMidRight]", get_glMidRight());
+    a_page = a_page.replace("[glBottom]", get_glBottom());
+    return a_page;
 }
-exports.defaultPage = defaultPage;
+exports.getPage = getPage;

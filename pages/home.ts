@@ -1,12 +1,7 @@
 
-export class BodyPage {
-    srv_url
-    
-    constructor (a_url : string) {
-        this.srv_url = a_url
-    }
-
-    get_body() {
-        return `<h1>HOME page: ${this.srv_url}</h1>`;
-    }
+export function get_body(param_obj: object) {
+    return `
+        <h1>HOME page</h1>
+        <div class='debug'>${JSON.stringify(param_obj)}</div>
+        `;
 }

@@ -1,22 +1,12 @@
-import { mDB } from './db_module.js';
+
 
 import https from 'https';
 import fs from 'fs';
 import path from 'path';
-//import { open } from 'fs/promises';
-//import {BodyParser}  from 'body-parser'
-
-
-
-
-import { defaultPage } from "./pages/_default.js";
-
-
-
 import url from 'url';
 import qs from 'querystring';
 
-
+import { RouteParam } from './pages/_clases.js';
 
 
 
@@ -48,9 +38,9 @@ function go_run() {
 
       console.log("event END ", req.method, req.url, body);
 
-      let param_obj = {
-        method: req.method,
-        url: req.url,
+      let param_obj: RouteParam = {
+        method: "" + req.method,
+        url: "" + req.url,
         pathname: "",
         arg: {},
       };
@@ -76,7 +66,7 @@ function go_run() {
         //let filePath = path.join('.', a_param.pathname).split("%20").join(" ");
         const filePath = path.join(__dirname, param_obj.pathname).split("%20").join(" ");
         const ext = path.extname(param_obj.pathname);
- 
+
         if (ext) {
           console.log('Static resourse: ', __dirname, filePath, ext);
 
@@ -132,18 +122,17 @@ function go_run() {
 
       if (srvRoute.has(param_obj.pathname)) {
 
-        const v_route = await import(srvRoute.get(param_obj.pathname));
-        //const a_body = v_route.getBodyPages();      // работает
-        const page_obj = new v_route.BodyPage(param_obj);
-        const a_body = page_obj.get_body();
-        page_obj.destroy();
-        //delete page_obj;
+        let a_body = "";
+        try {
+          const v_route = await import(srvRoute.get(param_obj.pathname));
+          a_body = await v_route.get_body(param_obj);
+        } catch (_e) {
+          const e = _e as Error;
+          a_body = e.message;
+        }
 
-
-        const a_page_obj = new defaultPage({ "url_obj": url_obj, "method": req.method , "param_obj": param_obj});
-        let a_page = a_page_obj.getPage();
-        
-        
+        const defaultPage = await import("./pages/_default.js");
+        let a_page = defaultPage.getPage({ "url_obj": url_obj, "method": req.method, "param_obj": param_obj });
 
         a_page = a_page.replace("[glMidRight]", a_body);
 

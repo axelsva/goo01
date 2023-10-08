@@ -35,13 +35,9 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-const db_module_js_1 = require("./db_module.js");
 const https_1 = __importDefault(require("https"));
 const fs_1 = __importDefault(require("fs"));
 const path_1 = __importDefault(require("path"));
-//import { open } from 'fs/promises';
-//import {BodyParser}  from 'body-parser'
-const _default_js_1 = require("./pages/_default.js");
 const url_1 = __importDefault(require("url"));
 const querystring_1 = __importDefault(require("querystring"));
 function go_run() {
@@ -50,99 +46,118 @@ function go_run() {
         cert: fs_1.default.readFileSync('./key/cert.pem'),
     };
     https_1.default.createServer(options, (req, res) => __awaiter(this, void 0, void 0, function* () {
-        if (req.method == 'POST') {
-            let body = '';
-            req.on('data', function (data) {
-                body += data;
-                // 1e6 === 1 * Math.pow(10, 6) === 1 * 1000000 ~~~ 1MB
-                if (body.length > 1e6) {
-                    // FLOOD ATTACK OR FAULTY CLIENT, NUKE REQUEST
-                    // return throw.console.error();
-                    return;
-                    // req.connection.destroy();
+        let body = '';
+        req.on('data', function (data) {
+            body += data;
+            // 1e6 === 1 * Math.pow(10, 6) === 1 * 1000000 ~~~ 1MB
+            if (body.length > 1e6) {
+                // FLOOD ATTACK OR FAULTY CLIENT, NUKE REQUEST
+                // return throw.console.error();
+                return;
+                // req.connection.destroy();
+            }
+            console.log("event ON ", req.method, req.url, body);
+        });
+        req.on('end', function () {
+            return __awaiter(this, void 0, void 0, function* () {
+                console.log("event END ", req.method, req.url, body);
+                let param_obj = {
+                    method: "" + req.method,
+                    url: "" + req.url,
+                    pathname: "",
+                    arg: {},
+                };
+                const url_obj = url_1.default.parse("" + req.url, true);
+                param_obj.pathname = "" + url_obj.pathname;
+                if (req.method === 'POST') {
+                    param_obj.arg = querystring_1.default.parse(body);
                 }
-            });
-            req.on('end', function () {
-                let POST = querystring_1.default.parse(body);
-                console.log("POST", POST);
-                // use POST
-            });
-        }
-        ;
-        const url_obj = url_1.default.parse("" + req.url, true);
-        console.log(JSON.stringify(url_obj));
-        const action = "" + url_obj.pathname;
-        // Path Refinements
-        const filePath = path_1.default.join(__dirname, action).split("%20").join(" ");
-        //let filePath = path.join('.', action).split("%20").join(" ");
-        const ext = path_1.default.extname(action);
-        console.log('FP ---', __dirname, filePath, ext);
-        if (ext) {
-            //console.log('static --------------');
-            // Checking if the path exists
-            fs_1.default.exists(filePath, function (exists) {
-                // if (!exists) {
-                //   res.writeHead(404, { "Content-Type": "text/plain" });
-                //   res.end("404 Not Found");
-                //   console.log('static --------------404');
-                //   return;
-                // }
-                // Setting default Content-Type
-                let contentType = "text/plain";
-                // Checking if the extension of
-                // image is '.png'
-                switch (ext) {
-                    case '.png':
-                        contentType = 'image/png';
-                        break;
-                    case '.jpg':
-                        contentType = 'image/jpg';
-                        break;
-                    case '.jpeg':
-                        contentType = 'image/jpeg';
-                        break;
-                    case '.gif':
-                        contentType = 'image/gif';
-                        break;
-                    case '.css':
-                        contentType = 'text/css';
-                        break;
+                else if (req.method === 'GET') {
+                    param_obj.arg = url_obj.query;
                 }
-                // Reading the file
-                fs_1.default.readFile(filePath, function (err, content) {
-                    if (err) {
-                        res.writeHead(404, { "Content-Type": "text/plain" });
-                        res.end("404 Not Found");
-                        console.log('static --------------HZ', err.message);
+                else {
+                    param_obj.arg = url_obj.query;
+                }
+                console.log("param_obj: ", JSON.stringify(param_obj));
+                // static resourse
+                if (param_obj.method === 'GET') {
+                    //let filePath = path.join('.', a_param.pathname).split("%20").join(" ");
+                    const filePath = path_1.default.join(__dirname, param_obj.pathname).split("%20").join(" ");
+                    const ext = path_1.default.extname(param_obj.pathname);
+                    if (ext) {
+                        console.log('Static resourse: ', __dirname, filePath, ext);
+                        // Checking if the path exists
+                        fs_1.default.exists(filePath, function (exists) {
+                            // if (!exists) {
+                            //   res.writeHead(404, { "Content-Type": "text/plain" });
+                            //   res.end("404 Not Found");
+                            //   console.log('static --------------404');
+                            //   return;
+                            // }
+                            // Setting default Content-Type
+                            let contentType = "text/plain";
+                            // Checking if the extension of
+                            // image is '.png'
+                            switch (ext) {
+                                case '.png':
+                                    contentType = 'image/png';
+                                    break;
+                                case '.jpg':
+                                    contentType = 'image/jpg';
+                                    break;
+                                case '.jpeg':
+                                    contentType = 'image/jpeg';
+                                    break;
+                                case '.gif':
+                                    contentType = 'image/gif';
+                                    break;
+                                case '.css':
+                                    contentType = 'text/css';
+                                    break;
+                            }
+                            // Reading the file
+                            fs_1.default.readFile(filePath, function (err, content) {
+                                if (err) {
+                                    res.writeHead(404, { "Content-Type": "text/plain" });
+                                    res.end("404 Not Found");
+                                    console.log('static --------------HZ', err.message);
+                                    return;
+                                }
+                                res.writeHead(200, { "Content-Type": contentType });
+                                res.end(content);
+                                //console.log('static --------------OK');
+                                return;
+                            });
+                        });
+                        //console.log('gggggggggggggggggggg');
                         return;
                     }
-                    res.writeHead(200, { "Content-Type": contentType });
-                    res.end(content);
-                    //console.log('static --------------OK');
+                }
+                const srvRoute = new Map();
+                srvRoute.set('/', './pages/home');
+                srvRoute.set('/about', './pages/about');
+                srvRoute.set('/product', './pages/product');
+                srvRoute.set('/init', './pages/init');
+                if (srvRoute.has(param_obj.pathname)) {
+                    let a_body = "";
+                    try {
+                        const v_route = yield Promise.resolve(`${srvRoute.get(param_obj.pathname)}`).then(s => __importStar(require(s)));
+                        a_body = yield v_route.get_body(param_obj);
+                    }
+                    catch (_e) {
+                        const e = _e;
+                        a_body = e.message;
+                    }
+                    const defaultPage = yield Promise.resolve().then(() => __importStar(require("./pages/_default.js")));
+                    let a_page = defaultPage.getPage({ "url_obj": url_obj, "method": req.method, "param_obj": param_obj });
+                    a_page = a_page.replace("[glMidRight]", a_body);
+                    res.writeHead(200, { 'Content-Type': 'text/html; charset=utf-8' });
+                    res.write(a_page);
+                    res.end();
                     return;
-                });
+                }
             });
-            //console.log('gggggggggggggggggggg');
-            return;
-        }
-        const srvRoute = new Map();
-        srvRoute.set('/', './pages/home');
-        srvRoute.set('/about', './pages/about');
-        srvRoute.set('/product', './pages/product');
-        srvRoute.set('/init', './pages/init');
-        if (srvRoute.has(url_obj.pathname)) {
-            const v_route = yield Promise.resolve(`${srvRoute.get(url_obj.pathname)}`).then(s => __importStar(require(s)));
-            //const a_body = v_route.getBodyPages();      // работает
-            const page_obj = new v_route.BodyPage(url_obj.pathname);
-            const a_body = page_obj.get_body();
-            const a_page_obj = new _default_js_1.defaultPage({ "url_obj": url_obj, "method": req.method });
-            let a_page = a_page_obj.getPage();
-            a_page = a_page.replace("[glMidRight]", a_body);
-            res.writeHead(200, { 'Content-Type': 'text/html; charset=utf-8' });
-            res.write(a_page);
-            res.end();
-            return;
-        }
+        });
         // res.writeHead(200, { 'Content-Type': 'text/html; charset=utf-8' });
         // res.write('ku-ku ' + JSON.stringify(url_obj));
         // res.end();
@@ -152,5 +167,3 @@ function go_run() {
 console.log("Server: Start");
 go_run();
 console.log("Server: Exit");
-db_module_js_1.mDB.closeDb();
-console.log("END");
