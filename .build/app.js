@@ -47,7 +47,13 @@ function go_run() {
     };
     https_1.default.createServer(options, (req, res) => __awaiter(this, void 0, void 0, function* () {
         let body = '';
+        req.on('error', err => {
+            // This prints the error message and stack trace to `stderr`.
+            console.error("ERROR", err, err.stack);
+            console.error("ERROR2", JSON.stringify(err));
+        });
         req.on('data', function (data) {
+            //      console.log("event ON ", req.method, req.url, body);
             body += data;
             // 1e6 === 1 * Math.pow(10, 6) === 1 * 1000000 ~~~ 1MB
             if (body.length > 1e6) {
@@ -56,11 +62,10 @@ function go_run() {
                 return;
                 // req.connection.destroy();
             }
-            console.log("event ON ", req.method, req.url, body);
         });
         req.on('end', function () {
             return __awaiter(this, void 0, void 0, function* () {
-                console.log("event END ", req.method, req.url, body);
+                //      console.log("event END ", req.method, req.url, body);
                 let param_obj = {
                     method: "" + req.method,
                     url: "" + req.url,
@@ -85,7 +90,7 @@ function go_run() {
                     const filePath = path_1.default.join(__dirname, param_obj.pathname).split("%20").join(" ");
                     const ext = path_1.default.extname(param_obj.pathname);
                     if (ext) {
-                        console.log('Static resourse: ', __dirname, filePath, ext);
+                        //console.log('Static resourse: ', __dirname, filePath, ext);
                         // Checking if the path exists
                         fs_1.default.exists(filePath, function (exists) {
                             // if (!exists) {
@@ -120,7 +125,7 @@ function go_run() {
                                 if (err) {
                                     res.writeHead(404, { "Content-Type": "text/plain" });
                                     res.end("404 Not Found");
-                                    console.log('static --------------HZ', err.message);
+                                    console.log('static 404 Not Found', err.message);
                                     return;
                                 }
                                 res.writeHead(200, { "Content-Type": contentType });
@@ -129,7 +134,6 @@ function go_run() {
                                 return;
                             });
                         });
-                        //console.log('gggggggggggggggggggg');
                         return;
                     }
                 }
@@ -137,16 +141,18 @@ function go_run() {
                 srvRoute.set('/', './pages/home');
                 srvRoute.set('/about', './pages/about');
                 srvRoute.set('/product', './pages/product');
+                srvRoute.set('/product_edit', './pages/product_edit');
                 srvRoute.set('/init', './pages/init');
                 if (srvRoute.has(param_obj.pathname)) {
                     let a_body = "";
                     try {
                         const v_route = yield Promise.resolve(`${srvRoute.get(param_obj.pathname)}`).then(s => __importStar(require(s)));
-                        a_body = yield v_route.get_body(param_obj);
+                        a_body = v_route.get_body(param_obj);
                     }
                     catch (_e) {
                         const e = _e;
                         a_body = e.message;
+                        console.log("---------------------dfvdfvdf--------------------------------");
                     }
                     const defaultPage = yield Promise.resolve().then(() => __importStar(require("./pages/_default.js")));
                     let a_page = defaultPage.getPage({ "url_obj": url_obj, "method": req.method, "param_obj": param_obj });
@@ -158,10 +164,7 @@ function go_run() {
                 }
             });
         });
-        // res.writeHead(200, { 'Content-Type': 'text/html; charset=utf-8' });
-        // res.write('ku-ku ' + JSON.stringify(url_obj));
-        // res.end();
-        //console.log("NOT NOT", req.url);
+        //console.log("event END END ", req.method, req.url, body);
     })).listen(8000);
 }
 console.log("Server: Start");

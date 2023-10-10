@@ -24,23 +24,41 @@ var __importStar = (this && this.__importStar) || function (mod) {
 };
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.get_body = void 0;
-const mClass = __importStar(require("./_clases.js"));
+const mDB = __importStar(require("./db_module.js"));
 function get_body(param_obj) {
+    console.log('sdsdsd');
     let result = `
-        <h1>Product page</h1>
+        <h1>Product EDIT page</h1>
         <div class='debug'>${JSON.stringify(param_obj)}</div>
-        <div>${mClass.add_html_a('добавить товар', '/product_edit?id=new')}</div>
-        <form action="/product?action=create" method="GET">
-        <input type="text" name="answer" value="a2">Операционная система<Br>
-            <p><input type="submit"></p>
-            <p><button formaction="/about">Отправить2</button></p>
-            <button value=cmd_addproduct  type="submit" name="btn" formaction="/product">Добавить товар</button>
+        <form action="/product_edit" method="GET">
+            Название:<input type="text" name="name" value=""><Br>
+            Артикул:<input type="text" name="articul" value=""><Br>
+            Описание:<input type="text" name="description" value=""><Br>
+            Цена:<input type="text" name="price" value=""><Br>
+            <button value=cmd_addproduct  type="submit" name="btn" formaction="/product_edit">Добавить товар</button>
+            <button value=cmd_addproduct  type="reset" name="btn" formaction="/product_edit">Очистить</button>
         </form>
         `;
     if (param_obj && ('arg' in param_obj)) {
         if (param_obj.arg && ('btn' in param_obj.arg)) {
+            const a_product = {};
             switch (param_obj.arg.btn) {
-                case 'cmd_dbcreate':
+                case 'cmd_addproduct':
+                    if ('name' in param_obj.arg) {
+                        a_product.name = param_obj.arg['name'];
+                    }
+                    if ('articul' in param_obj.arg) {
+                        a_product.articul = param_obj.arg['articul'];
+                    }
+                    if ('description' in param_obj.arg) {
+                        a_product.description = param_obj.arg['description'];
+                    }
+                    if ('price' in param_obj.arg) {
+                        a_product.price = param_obj.arg['price'];
+                    }
+                    if (a_product.name.length > 2) {
+                        mDB.db_ProductAdd(a_product);
+                    }
                     break;
             }
         }

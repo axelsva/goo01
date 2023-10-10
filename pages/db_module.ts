@@ -1,28 +1,47 @@
-import fs from "fs";
+//import fs from "fs";
 import sqlite3 from 'sqlite3';
+import path from 'path';
 
-sqlite3.verbose();
+import * as mClass from './_clases.js';
 
-const filepath = "./goo01.db";
+//sqlite3.verbose();
+
+const dbpath = path.join(__dirname, "../goo01.db");
 
 
 export function db_CreateDataBase() {
-  //fs.openSync(filepath, "w");
-  const db = new sqlite3.Database(filepath, sqlite3.OPEN_READWRITE)
 
+  const db = new sqlite3.Database(dbpath, sqlite3.OPEN_READWRITE);
 
-  db.serialize(() => {
+  db.run(`
+  CREATE TABLE IF NOT EXISTS product ( 
+    ID INTEGER PRIMARY KEY AUTOINCREMENT,
+    name   VARCHAR(50) NOT NULL,
+    articul   VARCHAR(20) NOT NULL,
+    description  VARCHAR(50) NOT NULL,
+    price real NOT NULL );
+    ` );
 
-    db.run( `
-    CREATE TABLE product ( 
-      ID INTEGER PRIMARY KEY AUTOINCREMENT,
-      name   VARCHAR(50) NOT NULL,
-      articul   VARCHAR(20) NOT NULL,
-      description  VARCHAR(50) NOT NULL,
-      price real NOT NULL );
-      ` );
-    });
+  //  db.serialize( () => {
+  //  })
 
-    db.close();
+  db.close();
 }
-  
+
+
+export function db_ProductAdd(product: mClass.Product) {
+
+  const db = new sqlite3.Database(dbpath, sqlite3.OPEN_READWRITE);
+
+  db.run('INSERT INTO product(name, articul, description, price)  VALUES( ?,?,?,?)',
+    [product.name,
+    product.articul,
+    product.description,
+    product.price,
+    ]);
+
+  //  db.serialize( () => {
+  //  })
+
+  db.close();
+}
