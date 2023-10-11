@@ -1,7 +1,7 @@
 import * as mDB from './db_module.js';
 import * as mClass from './_clases.js';
 
-export   function get_body(param_obj: mClass.RouteParam) {
+export  async  function get_body(param_obj: mClass.RouteParam) {
 
     let result = `
     <h1>INIT page</h1>
@@ -27,8 +27,15 @@ export   function get_body(param_obj: mClass.RouteParam) {
 
             switch (param_obj.arg.btn) {
                 case 'cmd_dbcreate':
-                     mDB.db_CreateDataBase();
-                    result += 'DataBase created';
+                    try {
+                       await mDB.db_CreateDataBase();
+                       result += 'DataBase created';
+                    } catch (err) {
+                        result += 'Error --------';
+                        console.log("---------ssssssssssss----");
+
+                    }
+
                     break;
 
             }

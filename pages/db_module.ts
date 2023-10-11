@@ -3,33 +3,50 @@ import sqlite3 from 'sqlite3';
 import path from 'path';
 
 import * as mClass from './_clases.js';
+import { rejects } from 'assert';
 
 //sqlite3.verbose();
 
 const dbpath = path.join(__dirname, "../goo01.db");
 
 
-export function db_CreateDataBase() {
+export async function db_CreateDataBase() {
 
-  const db = new sqlite3.Database(dbpath, sqlite3.OPEN_READWRITE);
+  return new Promise(function(resolve, reject) {
 
-  db.run(`
-  CREATE TABLE IF NOT EXISTS product ( 
-    ID INTEGER PRIMARY KEY AUTOINCREMENT,
-    name   VARCHAR(50) NOT NULL,
-    articul   VARCHAR(20) NOT NULL,
-    description  VARCHAR(50) NOT NULL,
-    price real NOT NULL );
-    ` );
+    const db = new sqlite3.Database(dbpath, sqlite3.OPEN_READWRITE);
 
-  //  db.serialize( () => {
-  //  })
+    db.run(`
+    CREATE TABLE  product ( 
+      ID INTEGER PRIMARY KEY AUTOINCREMENT,
+      name   VARCHAR(50) NOT NULL,
+      articul   VARCHAR(20) NOT NULL,
+      description  VARCHAR(50) NOT NULL,
+      price real NOT NULL );
+      `,
+      (err) => {
+        if (err) {
+          //reject(new Error("Error  db_CreateDataBase: "));
+          throw new Error("Error  db_CreateDataBase: ");
+        }
 
-  db.close();
+      });
+
+    //  db.serialize( () => {
+    //  })
+
+    db.close();
+
+    resolve(1);
+  })
+
 }
 
 
-export function db_ProductAdd(product: mClass.Product) {
+export async function db_ProductAdd(product: mClass.Product) {
+
+  throw new Error("Error db_ProductAdd ");
+
 
   const db = new sqlite3.Database(dbpath, sqlite3.OPEN_READWRITE);
 

@@ -47,7 +47,7 @@ function go_run() {
 
       //      console.log("event END ", req.method, req.url, body);
 
-      let param_obj: mClass.RouteParam = {
+      const param_obj: mClass.RouteParam = {
         method: "" + req.method,
         url: "" + req.url,
         pathname: "",
@@ -130,28 +130,34 @@ function go_run() {
       srvRoute.set('/init', './pages/init');
 
       let a_page = "";
+      const defaultPage = await import("./pages/_default.js");
+      a_page = await defaultPage.getPage({ "url_obj": url_obj, "method": req.method, "param_obj": param_obj });
 
+      let a_body = "";
       if (srvRoute.has(param_obj.pathname)) {
 
-        let a_body = "";
         try {
           const v_route = await import(srvRoute.get(param_obj.pathname));
           a_body = await v_route.get_body(param_obj);
-
-          const defaultPage = await import("./pages/_default.js");
-          a_page = await defaultPage.getPage({ "url_obj": url_obj, "method": req.method, "param_obj": param_obj });
-          a_page = a_page.replace("[glMidRight]", a_body);
-
+  
         } catch (_e) {
           const e = _e as Error;
-          a_page = e.message;
+          a_body = e.message;
           console.log("srvRoute", JSON.stringify(e));
         }
+  
+      } else {
+        a_body = "Page not found";
+
       }
-      res.write(a_page);
+
+      a_page = a_page.replace("[glMidRight]", a_body);
+
       res.writeHead(200, { 'Content-Type': 'text/html; charset=utf-8' });
+      res.write(a_page);
       res.end();
       return;
+
 
     });
 

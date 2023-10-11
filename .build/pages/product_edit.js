@@ -36,7 +36,6 @@ exports.get_body = void 0;
 const mDB = __importStar(require("./db_module.js"));
 function get_body(param_obj) {
     return __awaiter(this, void 0, void 0, function* () {
-        console.log('sdsdsd');
         let result = `
         <h1>Product EDIT page</h1>
         <div class='debug'>${JSON.stringify(param_obj)}</div>
@@ -47,12 +46,16 @@ function get_body(param_obj) {
             Цена:<input type="text" name="price" value=""><Br>
             <button value=cmd_addproduct  type="submit" name="btn" formaction="/product_edit">Добавить товар</button>
             <button value=cmd_addproduct  type="reset" name="btn" formaction="/product_edit">Очистить</button>
+            <button value=cmd_error  type="submit" name="btn" formaction="/product_edit">Ошибка</button>
         </form>
         `;
         if (param_obj && ('arg' in param_obj)) {
             if (param_obj.arg && ('btn' in param_obj.arg)) {
                 const a_product = {};
                 switch (param_obj.arg.btn) {
+                    case 'cmd_error':
+                        throw new Error("Error 777 ");
+                        break;
                     case 'cmd_addproduct':
                         if ('name' in param_obj.arg) {
                             a_product.name = param_obj.arg['name'];

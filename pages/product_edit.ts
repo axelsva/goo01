@@ -2,8 +2,6 @@ import * as mClass from './_clases.js';
 import * as mDB from './db_module.js';
 
 export async function get_body(param_obj: mClass.RouteParam) {
-    console.log('sdsdsd');
-
 
     let result = `
         <h1>Product EDIT page</h1>
@@ -15,6 +13,7 @@ export async function get_body(param_obj: mClass.RouteParam) {
             Цена:<input type="text" name="price" value=""><Br>
             <button value=cmd_addproduct  type="submit" name="btn" formaction="/product_edit">Добавить товар</button>
             <button value=cmd_addproduct  type="reset" name="btn" formaction="/product_edit">Очистить</button>
+            <button value=cmd_error  type="submit" name="btn" formaction="/product_edit">Ошибка</button>
         </form>
         `;
 
@@ -24,6 +23,10 @@ export async function get_body(param_obj: mClass.RouteParam) {
             const a_product = {} as mClass.Product;
 
             switch (param_obj.arg.btn) {
+                case 'cmd_error':
+                    throw new Error("Error 777 ");
+                    break;
+
                 case 'cmd_addproduct':
                     
                     if ('name' in param_obj.arg) {
