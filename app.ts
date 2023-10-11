@@ -128,31 +128,31 @@ function go_run() {
       srvRoute.set('/product', './pages/product');
       srvRoute.set('/product_edit', './pages/product_edit');
       srvRoute.set('/init', './pages/init');
-     
+
+      let a_page = "";
 
       if (srvRoute.has(param_obj.pathname)) {
 
         let a_body = "";
         try {
-          const v_route =  await import(srvRoute.get(param_obj.pathname));
-          a_body =  v_route.get_body(param_obj);
+          const v_route = await import(srvRoute.get(param_obj.pathname));
+          a_body = await v_route.get_body(param_obj);
+
+          const defaultPage = await import("./pages/_default.js");
+          a_page = await defaultPage.getPage({ "url_obj": url_obj, "method": req.method, "param_obj": param_obj });
+          a_page = a_page.replace("[glMidRight]", a_body);
+
         } catch (_e) {
           const e = _e as Error;
-          a_body = e.message;
-          console.log("---------------------dfvdfvdf--------------------------------");
+          a_page = e.message;
+          console.log("srvRoute", JSON.stringify(e));
         }
-
-        const defaultPage =  await import("./pages/_default.js");
-        let a_page =  defaultPage.getPage({ "url_obj": url_obj, "method": req.method, "param_obj": param_obj });
-
-        a_page = a_page.replace("[glMidRight]", a_body);
-
-        res.writeHead(200, { 'Content-Type': 'text/html; charset=utf-8' });
-        res.write(a_page);
-        res.end();
-        return;
-
       }
+      res.write(a_page);
+      res.writeHead(200, { 'Content-Type': 'text/html; charset=utf-8' });
+      res.end();
+      return;
+
     });
 
 

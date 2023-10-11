@@ -143,25 +143,26 @@ function go_run() {
                 srvRoute.set('/product', './pages/product');
                 srvRoute.set('/product_edit', './pages/product_edit');
                 srvRoute.set('/init', './pages/init');
+                let a_page = "";
                 if (srvRoute.has(param_obj.pathname)) {
                     let a_body = "";
                     try {
                         const v_route = yield Promise.resolve(`${srvRoute.get(param_obj.pathname)}`).then(s => __importStar(require(s)));
-                        a_body = v_route.get_body(param_obj);
+                        a_body = yield v_route.get_body(param_obj);
+                        const defaultPage = yield Promise.resolve().then(() => __importStar(require("./pages/_default.js")));
+                        a_page = yield defaultPage.getPage({ "url_obj": url_obj, "method": req.method, "param_obj": param_obj });
+                        a_page = a_page.replace("[glMidRight]", a_body);
                     }
                     catch (_e) {
                         const e = _e;
-                        a_body = e.message;
-                        console.log("---------------------dfvdfvdf--------------------------------");
+                        a_page = e.message;
+                        console.log("srvRoute", JSON.stringify(e));
                     }
-                    const defaultPage = yield Promise.resolve().then(() => __importStar(require("./pages/_default.js")));
-                    let a_page = defaultPage.getPage({ "url_obj": url_obj, "method": req.method, "param_obj": param_obj });
-                    a_page = a_page.replace("[glMidRight]", a_body);
-                    res.writeHead(200, { 'Content-Type': 'text/html; charset=utf-8' });
-                    res.write(a_page);
-                    res.end();
-                    return;
                 }
+                res.write(a_page);
+                res.writeHead(200, { 'Content-Type': 'text/html; charset=utf-8' });
+                res.end();
+                return;
             });
         });
         //console.log("event END END ", req.method, req.url, body);

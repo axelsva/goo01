@@ -1,7 +1,7 @@
 import * as mClass from './_clases.js';
 import * as mDB from './db_module.js';
 
-export function get_body(param_obj: mClass.RouteParam) {
+export async function get_body(param_obj: mClass.RouteParam) {
     console.log('sdsdsd');
 
 
