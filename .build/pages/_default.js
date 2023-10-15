@@ -5,12 +5,15 @@ function getPage(url_obj) {
     const pageTemplate = `
     <head>
 <link rel="stylesheet" type="text/css" href="/assets/css/style.css"></head>
-<div class="glTop">[glTop]</div>
-<div class="glMidle">
-    <div class="glMidLeft ">[glMidLeft]</div>
-    <div class="glMidRight">[glMidRight]</div>
+<div class="glMain">
+    <div class="glTop">[glTop]</div>
+    <div class="glMidle">
+        <div class="glMidRight">[glMidRight]</div>
+        <div class="glMidLeft ">[glMidLeft]</div>
+  
+    </div>
+    <div class="glBottom">[glBottom]</div>
 </div>
-<div class="glBottom">[glBottom]</div>
 `;
     function get_glTop() {
         const a_tel = "8-800-88-98=87";

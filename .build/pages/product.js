@@ -22,11 +22,21 @@ var __importStar = (this && this.__importStar) || function (mod) {
     __setModuleDefault(result, mod);
     return result;
 };
+var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, generator) {
+    function adopt(value) { return value instanceof P ? value : new P(function (resolve) { resolve(value); }); }
+    return new (P || (P = Promise))(function (resolve, reject) {
+        function fulfilled(value) { try { step(generator.next(value)); } catch (e) { reject(e); } }
+        function rejected(value) { try { step(generator["throw"](value)); } catch (e) { reject(e); } }
+        function step(result) { result.done ? resolve(result.value) : adopt(result.value).then(fulfilled, rejected); }
+        step((generator = generator.apply(thisArg, _arguments || [])).next());
+    });
+};
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.get_body = void 0;
 const mClass = __importStar(require("./_clases.js"));
 function get_body(param_obj) {
-    let result = `
+    return __awaiter(this, void 0, void 0, function* () {
+        let result = `
         <h1>Product page</h1>
         <div class='debug'>${JSON.stringify(param_obj)}</div>
         <div>${mClass.add_html_a('добавить товар', '/product_edit?id=new')}</div>
@@ -37,14 +47,15 @@ function get_body(param_obj) {
             <button value=cmd_addproduct  type="submit" name="btn" formaction="/product">Добавить товар</button>
         </form>
         `;
-    if (param_obj && ('arg' in param_obj)) {
-        if (param_obj.arg && ('btn' in param_obj.arg)) {
-            switch (param_obj.arg.btn) {
-                case 'cmd_dbcreate':
-                    break;
+        if (param_obj && ('arg' in param_obj)) {
+            if (param_obj.arg && ('btn' in param_obj.arg)) {
+                switch (param_obj.arg.btn) {
+                    case 'cmd_dbcreate':
+                        break;
+                }
             }
         }
-    }
-    return result;
+        return result;
+    });
 }
 exports.get_body = get_body;

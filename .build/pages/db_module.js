@@ -21,7 +21,11 @@ const dbpath = path_1.default.join(__dirname, "../goo01.db");
 function db_CreateDataBase() {
     return __awaiter(this, void 0, void 0, function* () {
         return new Promise(function (resolve, reject) {
-            const db = new sqlite3_1.default.Database(dbpath, sqlite3_1.default.OPEN_READWRITE);
+            const db = new sqlite3_1.default.Database(dbpath, sqlite3_1.default.OPEN_READWRITE, (err) => {
+                if (err) {
+                    reject(err);
+                }
+            });
             db.run(`
     CREATE TABLE  product ( 
       ID INTEGER PRIMARY KEY AUTOINCREMENT,
@@ -31,30 +35,43 @@ function db_CreateDataBase() {
       price real NOT NULL );
       `, (err) => {
                 if (err) {
-                    //reject(new Error("Error  db_CreateDataBase: "));
-                    throw new Error("Error  db_CreateDataBase: ");
+                    reject(err);
+                }
+                else {
+                    resolve(1);
                 }
             });
             //  db.serialize( () => {
             //  })
             db.close();
-            resolve(1);
         });
     });
 }
 exports.db_CreateDataBase = db_CreateDataBase;
 function db_ProductAdd(product) {
     return __awaiter(this, void 0, void 0, function* () {
-        throw new Error("Error db_ProductAdd ");
-        const db = new sqlite3_1.default.Database(dbpath, sqlite3_1.default.OPEN_READWRITE);
-        db.run('INSERT INTO product(name, articul, description, price)  VALUES( ?,?,?,?)', [product.name,
-            product.articul,
-            product.description,
-            product.price,
-        ]);
-        //  db.serialize( () => {
-        //  })
-        db.close();
+        return new Promise(function (resolve, reject) {
+            const db = new sqlite3_1.default.Database(dbpath, sqlite3_1.default.OPEN_READWRITE, (err) => {
+                if (err) {
+                    reject(err);
+                }
+            });
+            db.run('INSERT INTO product(name, articul, description, price)  VALUES( ?,?,?,?)', [product.name,
+                product.articul,
+                product.description,
+                product.price,
+            ], (err) => {
+                if (err) {
+                    reject(err);
+                }
+                else {
+                    resolve(1);
+                }
+            });
+            //  db.serialize( () => {
+            //  })
+            db.close();
+        });
     });
 }
 exports.db_ProductAdd = db_ProductAdd;

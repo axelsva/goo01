@@ -6,7 +6,7 @@ export async function get_body(param_obj: mClass.RouteParam) {
     let result = `
         <h1>Product EDIT page</h1>
         <div class='debug'>${JSON.stringify(param_obj)}</div>
-        <form action="/product_edit" method="GET">
+        <form action="/product_edit" method="POST">
             Название:<input type="text" name="name" value=""><Br>
             Артикул:<input type="text" name="articul" value=""><Br>
             Описание:<input type="text" name="description" value=""><Br>
@@ -17,8 +17,8 @@ export async function get_body(param_obj: mClass.RouteParam) {
         </form>
         `;
 
-    if (param_obj && ('arg' in param_obj)) {
-        if (param_obj.arg && ('btn' in param_obj.arg)) {
+    if (param_obj && ('method' in param_obj) && ('arg' in param_obj)) {
+        if (param_obj.method==='POST' && param_obj.arg && ('btn' in param_obj.arg)) {
 
             const a_product = {} as mClass.Product;
 
@@ -28,7 +28,7 @@ export async function get_body(param_obj: mClass.RouteParam) {
                     break;
 
                 case 'cmd_addproduct':
-                    
+
                     if ('name' in param_obj.arg) {
                         a_product.name = param_obj.arg['name'] as string
                     }
@@ -42,16 +42,21 @@ export async function get_body(param_obj: mClass.RouteParam) {
                         a_product.price = param_obj.arg['price'] as number
                     }
 
-                    if (a_product.name.length>2) {
-                        mDB.db_ProductAdd(a_product);
+                    if (a_product.name.length < 3) {
+                        result += 'Error: Length product name must be more than 2 characters';
+                        return result;
                     }
 
+                    try {
+                        await mDB.db_ProductAdd(a_product)
+                            .then(() => { result += 'Success add: ' + a_product.name; })
+                            .catch((err) => { result += (err as Error).message; });
+                    } catch (err) {
+                        result += (err as Error).message;
+                    }
                     break;
-
             }
-
         }
-
     }
 
     return result;

@@ -1,3 +1,26 @@
+.glMain {
+    width: 800px;
+    max-width: 800px;
+}
+
+.glMidle {
+
+    overflow: hidden;
+}
+
+.glMidLeft {
+    width: 200px;
+    min-width: 200px;
+    background-color: lightgrey;
+    float: left;
+}
+
+.glMidRight {
+    float: right;
+    min-width: 200px;
+    width: 600;
+}
+
 h1 {
     color: blue
 }

@@ -3,7 +3,7 @@ import sqlite3 from 'sqlite3';
 import path from 'path';
 
 import * as mClass from './_clases.js';
-import { rejects } from 'assert';
+
 
 //sqlite3.verbose();
 
@@ -12,9 +12,14 @@ const dbpath = path.join(__dirname, "../goo01.db");
 
 export async function db_CreateDataBase() {
 
-  return new Promise(function(resolve, reject) {
+  return new Promise(function (resolve, reject) {
 
-    const db = new sqlite3.Database(dbpath, sqlite3.OPEN_READWRITE);
+    const db = new sqlite3.Database(dbpath, sqlite3.OPEN_READWRITE,
+      (err) => {
+        if (err) {
+          reject(err);
+        }
+      });
 
     db.run(`
     CREATE TABLE  product ( 
@@ -26,39 +31,49 @@ export async function db_CreateDataBase() {
       `,
       (err) => {
         if (err) {
-          //reject(new Error("Error  db_CreateDataBase: "));
-          throw new Error("Error  db_CreateDataBase: ");
+          reject(err);
+        } else {
+          resolve(1);
         }
-
       });
 
     //  db.serialize( () => {
     //  })
 
     db.close();
-
-    resolve(1);
   })
-
 }
 
 
 export async function db_ProductAdd(product: mClass.Product) {
 
-  throw new Error("Error db_ProductAdd ");
+  return new Promise(function (resolve, reject) {
 
+    const db = new sqlite3.Database(dbpath, sqlite3.OPEN_READWRITE,
+      (err) => {
+        if (err) {
+          reject(err);
+        }
+      });
 
-  const db = new sqlite3.Database(dbpath, sqlite3.OPEN_READWRITE);
+    db.run('INSERT INTO product(name, articul, description, price)  VALUES( ?,?,?,?)',
+      [product.name,
+      product.articul,
+      product.description,
+      product.price,
+      ],
 
-  db.run('INSERT INTO product(name, articul, description, price)  VALUES( ?,?,?,?)',
-    [product.name,
-    product.articul,
-    product.description,
-    product.price,
-    ]);
+      (err) => {
+        if (err) {
+          reject(err);
+        } else {
+          resolve(1);
+        }
+      });
 
-  //  db.serialize( () => {
-  //  })
+    //  db.serialize( () => {
+    //  })
 
-  db.close();
+    db.close();
+  })
 }

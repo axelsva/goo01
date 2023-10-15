@@ -59,10 +59,12 @@ function get_body(param_obj) {
                         try {
                             yield mDB.db_CreateDataBase();
                             result += 'DataBase created';
+                            // await mDB.db_CreateDataBase()
+                            //     .then(() => { result += 'DataBase created' })
+                            //     .catch((err) => { result += err.message });
                         }
                         catch (err) {
-                            result += 'Error --------';
-                            console.log("---------ssssssssssss----");
+                            result += err.message;
                         }
                         break;
                 }

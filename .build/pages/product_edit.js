@@ -39,7 +39,7 @@ function get_body(param_obj) {
         let result = `
         <h1>Product EDIT page</h1>
         <div class='debug'>${JSON.stringify(param_obj)}</div>
-        <form action="/product_edit" method="GET">
+        <form action="/product_edit" method="POST">
             Название:<input type="text" name="name" value=""><Br>
             Артикул:<input type="text" name="articul" value=""><Br>
             Описание:<input type="text" name="description" value=""><Br>
@@ -49,8 +49,8 @@ function get_body(param_obj) {
             <button value=cmd_error  type="submit" name="btn" formaction="/product_edit">Ошибка</button>
         </form>
         `;
-        if (param_obj && ('arg' in param_obj)) {
-            if (param_obj.arg && ('btn' in param_obj.arg)) {
+        if (param_obj && ('method' in param_obj) && ('arg' in param_obj)) {
+            if (param_obj.method === 'POST' && param_obj.arg && ('btn' in param_obj.arg)) {
                 const a_product = {};
                 switch (param_obj.arg.btn) {
                     case 'cmd_error':
@@ -69,8 +69,17 @@ function get_body(param_obj) {
                         if ('price' in param_obj.arg) {
                             a_product.price = param_obj.arg['price'];
                         }
-                        if (a_product.name.length > 2) {
-                            mDB.db_ProductAdd(a_product);
+                        if (a_product.name.length < 3) {
+                            result += 'Error: Length product name must be more than 2 characters';
+                            return result;
+                        }
+                        try {
+                            yield mDB.db_ProductAdd(a_product)
+                                .then(() => { result += 'Success add: ' + a_product.name; })
+                                .catch((err) => { result += err.message; });
+                        }
+                        catch (err) {
+                            result += err.message;
                         }
                         break;
                 }
