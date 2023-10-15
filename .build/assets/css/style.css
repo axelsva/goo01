@@ -4,7 +4,6 @@
 }
 
 .glMidle {
-
     overflow: hidden;
 }
 
@@ -18,8 +17,33 @@
 .glMidRight {
     float: right;
     min-width: 200px;
-    width: 600;
+    width: 600px;
 }
+
+.productitem {
+    overflow: hidden;
+}
+
+.p_id  {
+    float: left;
+    width: 40px;
+}
+
+.p_name  {
+    float: left;
+    width: 100px;
+}
+
+.p_articul  {
+    float: left;
+    width: 70px;
+}
+
+.p_price {
+    float: left;
+    width: 70px;
+}
+
 
 h1 {
     color: blue

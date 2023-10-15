@@ -34,19 +34,14 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.get_body = void 0;
 const mClass = __importStar(require("./_clases.js"));
+const mDB = __importStar(require("./db_module.js"));
 function get_body(param_obj) {
     return __awaiter(this, void 0, void 0, function* () {
         let result = `
         <h1>Product page</h1>
         <div class='debug'>${JSON.stringify(param_obj)}</div>
         <div>${mClass.add_html_a('добавить товар', '/product_edit?id=new')}</div>
-        <form action="/product?action=create" method="GET">
-        <input type="text" name="answer" value="a2">Операционная система<Br>
-            <p><input type="submit"></p>
-            <p><button formaction="/about">Отправить2</button></p>
-            <button value=cmd_addproduct  type="submit" name="btn" formaction="/product">Добавить товар</button>
-        </form>
-        `;
+    `;
         if (param_obj && ('arg' in param_obj)) {
             if (param_obj.arg && ('btn' in param_obj.arg)) {
                 switch (param_obj.arg.btn) {
@@ -55,6 +50,25 @@ function get_body(param_obj) {
                 }
             }
         }
+        yield mDB.db_ProductList()
+            .then((_rows) => {
+            //result += JSON.stringify(rows);
+            const rows = _rows;
+            result += '<div class="productlist">';
+            rows.forEach((_row) => {
+                const row = Object(_row);
+                if (('ID' in row) && ('name' in row) && ('articul' in row) && ('description' in row) && ('price' in row)) {
+                    result += '<div class="productitem">';
+                    result += `<div class="p_id"> ${mClass.add_html_a('' + row.ID, '/product_edit?id=' + row.ID)} </div>`;
+                    result += `<div class="p_name"> ${row.name}</div>`;
+                    result += `<div class="p_articul"> ${row.articul}</div>`;
+                    result += `<div class="p_price"> ${row.price}</div>`;
+                    result += '</div>';
+                }
+            });
+            result += '</div>';
+        })
+            .catch((err) => { result += err.message; });
         return result;
     });
 }

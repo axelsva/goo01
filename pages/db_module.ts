@@ -37,9 +37,6 @@ export async function db_CreateDataBase() {
         }
       });
 
-    //  db.serialize( () => {
-    //  })
-
     db.close();
   })
 }
@@ -71,8 +68,39 @@ export async function db_ProductAdd(product: mClass.Product) {
         }
       });
 
-    //  db.serialize( () => {
-    //  })
+    db.close();
+  })
+}
+
+export async function db_ProductList() {
+
+  return new Promise(function (resolve, reject) {
+
+    const db = new sqlite3.Database(dbpath, sqlite3.OPEN_READWRITE,
+      (err) => {
+        if (err) {
+          reject(err);
+        }
+      });
+
+    const query_str = 'select * from product order by name';
+
+    db.all(query_str, [],
+      (err, rows) => {
+        if (err) {
+
+          reject(err);
+
+        } else {
+
+          // rows.forEach((row) => {
+          //   console.log(row);
+          // });
+
+          resolve(rows);
+        }
+      });
+
 
     db.close();
   })
