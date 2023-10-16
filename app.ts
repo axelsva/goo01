@@ -138,7 +138,8 @@ function go_run() {
 
         try {
           const v_route = await import(srvRoute.get(param_obj.pathname));
-          a_body = await v_route.get_body(param_obj);
+          a_body = await v_ro
+          body(param_obj);
   
         } catch (_e) {
           const e = _e as Error;

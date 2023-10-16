@@ -21,8 +21,7 @@ export async function db_CreateDataBase() {
         }
       });
 
-    db.run(`
-    CREATE TABLE  product ( 
+    db.run(`CREATE TABLE  product ( 
       ID INTEGER PRIMARY KEY AUTOINCREMENT,
       name   VARCHAR(50) NOT NULL,
       articul   VARCHAR(20) NOT NULL,
