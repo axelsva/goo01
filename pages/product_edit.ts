@@ -18,13 +18,25 @@ export async function get_body(param_obj: mClass.RouteParam) {
         `;
 
     if (param_obj && ('method' in param_obj) && ('arg' in param_obj)) {
-        if (param_obj.method==='POST' && param_obj.arg && ('btn' in param_obj.arg)) {
+        if (param_obj.method === 'POST' && param_obj.arg && ('btn' in param_obj.arg)) {
 
             const a_product = {} as mClass.Product;
 
             switch (param_obj.arg.btn) {
                 case 'cmd_error':
-                    throw new Error("Error 777 ");
+                    result += `
+                    <p>
+                    <a href="/product">Redirect</a>
+                    </p>
+                    <script>
+                    setTimeout(function() {
+                        window.location.href = "/about";
+                        }, 3000); 
+                        </script>
+                    `;
+
+
+                    //throw new Error("Error 777 ");
                     break;
 
                 case 'cmd_addproduct':

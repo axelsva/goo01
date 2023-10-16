@@ -19,6 +19,7 @@
   },
   "dependencies": {
     "npm": "^10.1.0",
+    "passport": "^0.6.0",
     "sqlite": "^5.0.1",
     "sqlite3": "^5.1.6"
   }
