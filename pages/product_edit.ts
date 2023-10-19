@@ -3,17 +3,35 @@ import * as mDB from './db_module.js';
 
 export async function get_body(param_obj: mClass.RouteParam) {
 
-    let result = `
+    let result_edit = `
         <h1>Product EDIT page</h1>
+        <div class='debug'>${JSON.stringify(param_obj)}</div>
+        <form action="/product_edit" method="POST">
+            <p>
+            ID : <input type="text" name="ID" value="[gl_product_id]" disabled><Br>
+            Название:<input type="text" name="name" value="[gl_product_name]"><Br>
+            Артикул:<input type="text" name="articul" value="[gl_product_articul]"><Br>
+            Описание:<input type="text" name="description" value="[gl_product_description]"><Br>
+            Цена:<input type="number" name="price" value="[gl_product_price]"><Br>
+            </p><br>
+            <button value=cmd_editproduct  type="submit" name="btn" formaction="/product_edit">Обновить товар</button>
+            <button value=cmd_delproduct  type="submit" name="btn" formaction="/product_edit">Удалить товар</button>
+            <button value=""  type="submit" name="btn" formaction="/product">К списку товаров</button>
+        </form>
+        `;
+
+
+    let result = `
+        <h1>Product ADD page</h1>
         <div class='debug'>${JSON.stringify(param_obj)}</div>
         <form action="/product_edit" method="POST">
             Название:<input type="text" name="name" value=""><Br>
             Артикул:<input type="text" name="articul" value=""><Br>
             Описание:<input type="text" name="description" value=""><Br>
-            Цена:<input type="text" name="price" value=""><Br>
+            Цена:<input type="number" name="price" value=""><Br>
             <button value=cmd_addproduct  type="submit" name="btn" formaction="/product_edit">Добавить товар</button>
             <button value=cmd_addproduct  type="reset" name="btn" formaction="/product_edit">Очистить</button>
-            <button value=cmd_error  type="submit" name="btn" formaction="/product_edit">Ошибка</button>
+            <button value=""  type="submit" name="btn" formaction="/product">К списку товаровК</button>
         </form>
         `;
 
@@ -68,8 +86,16 @@ export async function get_body(param_obj: mClass.RouteParam) {
                     }
                     break;
             }
+
+        } else if (param_obj.method === 'GET' && param_obj.arg) {
+
+            if ('id' in param_obj.arg && param_obj.arg.id !=='new') {
+                result = result_edit;
+            }
+
         }
-    }
+    } 
+
 
     return result;
 }

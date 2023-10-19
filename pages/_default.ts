@@ -4,17 +4,19 @@ export function getPage(url_obj: object) {
 
     const pageTemplate = `
     <head>
-<link rel="stylesheet" type="text/css" href="/assets/css/style.css"></head>
-<div class="glMain">
-    <div class="glTop">[glTop]</div>
-    <div class="glMidle">
-        <div class="glMidRight">[glMidRight]</div>
-        <div class="glMidLeft ">[glMidLeft]</div>
-  
-    </div>
-    <div class="glBottom">[glBottom]</div>
-</div>
-`;
+        <link rel="stylesheet" type="text/css" href="/assets/css/style.css">
+    </head>
+    <body>
+        <div class="glMain">
+            <div class="glTop">[glTop]</div>
+            <div class="glMidle">
+                <div class="glMidLeft ">[glMidLeft]</div>
+                <div class="glMidRight">[glMidRight]</div>
+            </div>
+            <div class="glBottom">[glBottom]</div>
+        </div>
+    </body>
+        `;
 
 
     function get_glTop() {
