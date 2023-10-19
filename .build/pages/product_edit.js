@@ -54,7 +54,17 @@ function get_body(param_obj) {
                 const a_product = {};
                 switch (param_obj.arg.btn) {
                     case 'cmd_error':
-                        throw new Error("Error 777 ");
+                        result += `
+                    <p>
+                    <a href="/product">Redirect</a>
+                    </p>
+                    <script>
+                    setTimeout(function() {
+                        window.location.href = "/about";
+                        }, 3000); 
+                        </script>
+                    `;
+                        //throw new Error("Error 777 ");
                         break;
                     case 'cmd_addproduct':
                         if ('name' in param_obj.arg) {

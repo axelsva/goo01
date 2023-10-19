@@ -17,7 +17,8 @@
 .glMidRight {
     float: right;
     min-width: 200px;
-    width: 600px;
+    
+    background-color: rgb(49, 65, 65);
 }
 
 .productitem {
