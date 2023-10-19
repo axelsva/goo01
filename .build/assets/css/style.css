@@ -16,9 +16,10 @@
 }
 
 .glMidRight {
-    float: right;
+    float: none;
+    overflow: auto;
+
     min-width: 200px;
-    
     background-color: rgb(115, 207, 207);
 }
 
