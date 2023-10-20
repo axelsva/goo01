@@ -92,14 +92,76 @@ export async function db_ProductList() {
 
         } else {
 
-          // rows.forEach((row) => {
-          //   console.log(row);
-          // });
+          resolve(rows);
+
+        }
+      });
+
+
+    db.close();
+  })
+}
+
+
+
+
+export async function db_ProductGet(a_id: number) {
+
+  return new Promise(function (resolve, reject) {
+
+    const db = new sqlite3.Database(dbpath, sqlite3.OPEN_READWRITE,
+      (err) => {
+        if (err) {
+          reject(err);
+        }
+      });
+
+    const query_str = 'select * from product where ID=?';
+
+    db.get(query_str, [a_id],
+      (err, rows) => {
+        if (err) {
+
+          reject(err);
+
+        } else {
 
           resolve(rows);
         }
       });
 
+
+    db.close();
+  })
+}
+
+
+export async function db_ProductUpdate(product: mClass.Product) {
+
+  return new Promise(function (resolve, reject) {
+
+    const db = new sqlite3.Database(dbpath, sqlite3.OPEN_READWRITE,
+      (err) => {
+        if (err) {
+          reject(err);
+        }
+      });
+
+    db.run('UPDATE product SET name=?, articul=?, description=?, price=? WHERE ID=?',
+      [product.name,
+      product.articul,
+      product.description,
+      product.price,
+      product.ID,
+      ],
+
+      (err) => {
+        if (err) {
+          reject(err);
+        } else {
+          resolve(1);
+        }
+      });
 
     db.close();
   })

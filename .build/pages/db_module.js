@@ -12,7 +12,7 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.db_ProductList = exports.db_ProductAdd = exports.db_CreateDataBase = void 0;
+exports.db_ProductUpdate = exports.db_ProductGet = exports.db_ProductList = exports.db_ProductAdd = exports.db_CreateDataBase = void 0;
 //import fs from "fs";
 const sqlite3_1 = __importDefault(require("sqlite3"));
 const path_1 = __importDefault(require("path"));
@@ -84,9 +84,6 @@ function db_ProductList() {
                     reject(err);
                 }
                 else {
-                    // rows.forEach((row) => {
-                    //   console.log(row);
-                    // });
                     resolve(rows);
                 }
             });
@@ -95,3 +92,51 @@ function db_ProductList() {
     });
 }
 exports.db_ProductList = db_ProductList;
+function db_ProductGet(a_id) {
+    return __awaiter(this, void 0, void 0, function* () {
+        return new Promise(function (resolve, reject) {
+            const db = new sqlite3_1.default.Database(dbpath, sqlite3_1.default.OPEN_READWRITE, (err) => {
+                if (err) {
+                    reject(err);
+                }
+            });
+            const query_str = 'select * from product where ID=?';
+            db.get(query_str, [a_id], (err, rows) => {
+                if (err) {
+                    reject(err);
+                }
+                else {
+                    resolve(rows);
+                }
+            });
+            db.close();
+        });
+    });
+}
+exports.db_ProductGet = db_ProductGet;
+function db_ProductUpdate(product) {
+    return __awaiter(this, void 0, void 0, function* () {
+        return new Promise(function (resolve, reject) {
+            const db = new sqlite3_1.default.Database(dbpath, sqlite3_1.default.OPEN_READWRITE, (err) => {
+                if (err) {
+                    reject(err);
+                }
+            });
+            db.run('UPDATE product SET name=?, articul=?, description=?, price=? WHERE ID=?', [product.name,
+                product.articul,
+                product.description,
+                product.price,
+                product.ID,
+            ], (err) => {
+                if (err) {
+                    reject(err);
+                }
+                else {
+                    resolve(1);
+                }
+            });
+            db.close();
+        });
+    });
+}
+exports.db_ProductUpdate = db_ProductUpdate;

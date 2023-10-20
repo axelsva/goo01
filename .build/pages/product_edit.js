@@ -33,6 +33,7 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
 };
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.get_body = void 0;
+const mClass = __importStar(require("./_clases.js"));
 const mDB = __importStar(require("./db_module.js"));
 function get_body(param_obj) {
     return __awaiter(this, void 0, void 0, function* () {
@@ -40,14 +41,13 @@ function get_body(param_obj) {
         <h1>Product EDIT page</h1>
         <div class='debug'>${JSON.stringify(param_obj)}</div>
         <form action="/product_edit" method="POST">
-            <p>
-            ID : <input type="text" name="ID" value="[gl_product_id]" disabled><Br>
+            ID:<input type="hidden" name="id" value="[gl_product_ID]" ><Br>
             Название:<input type="text" name="name" value="[gl_product_name]"><Br>
             Артикул:<input type="text" name="articul" value="[gl_product_articul]"><Br>
             Описание:<input type="text" name="description" value="[gl_product_description]"><Br>
             Цена:<input type="number" name="price" value="[gl_product_price]"><Br>
-            </p><br>
-            <button value=cmd_editproduct  type="submit" name="btn" formaction="/product_edit">Обновить товар</button>
+            <br>
+            <button value=cmd_updateproduct  type="submit" name="btn" formaction="/product_edit">Обновить товар</button>
             <button value=cmd_delproduct  type="submit" name="btn" formaction="/product_edit">Удалить товар</button>
             <button value=""  type="submit" name="btn" formaction="/product">К списку товаров</button>
         </form>
@@ -60,14 +60,15 @@ function get_body(param_obj) {
             Артикул:<input type="text" name="articul" value=""><Br>
             Описание:<input type="text" name="description" value=""><Br>
             Цена:<input type="number" name="price" value=""><Br>
+            <br>
             <button value=cmd_addproduct  type="submit" name="btn" formaction="/product_edit">Добавить товар</button>
             <button value=cmd_addproduct  type="reset" name="btn" formaction="/product_edit">Очистить</button>
-            <button value=""  type="submit" name="btn" formaction="/product">К списку товаровК</button>
+            <button value=""  type="submit" name="btn" formaction="/product">К списку товаров</button>
         </form>
         `;
         if (param_obj && ('method' in param_obj) && ('arg' in param_obj)) {
             if (param_obj.method === 'POST' && param_obj.arg && ('btn' in param_obj.arg)) {
-                const a_product = {};
+                let a_product = {};
                 switch (param_obj.arg.btn) {
                     case 'cmd_error':
                         result += `
@@ -83,25 +84,29 @@ function get_body(param_obj) {
                         //throw new Error("Error 777 ");
                         break;
                     case 'cmd_addproduct':
-                        if ('name' in param_obj.arg) {
-                            a_product.name = param_obj.arg['name'];
-                        }
-                        if ('articul' in param_obj.arg) {
-                            a_product.articul = param_obj.arg['articul'];
-                        }
-                        if ('description' in param_obj.arg) {
-                            a_product.description = param_obj.arg['description'];
-                        }
-                        if ('price' in param_obj.arg) {
-                            a_product.price = param_obj.arg['price'];
-                        }
-                        if (a_product.name.length < 3) {
-                            result += 'Error: Length product name must be more than 2 characters';
-                            return result;
-                        }
                         try {
+                            a_product = mClass.NewProductFromArray(param_obj.arg);
+                            const err_arr = mClass.ProductValidate(a_product);
+                            if (err_arr.length > 0) {
+                                throw new Error(err_arr.join(';'));
+                            }
                             yield mDB.db_ProductAdd(a_product)
-                                .then(() => { result += 'Success add: ' + a_product.name; })
+                                .then(() => { result += 'Success add: ' + mClass.get_html_a_product(a_product); })
+                                .catch((err) => { result += err.message; });
+                        }
+                        catch (err) {
+                            result += err.message;
+                        }
+                        break;
+                    case 'cmd_updateproduct':
+                        try {
+                            a_product = mClass.NewProductFromArray(param_obj.arg);
+                            const err_arr = mClass.ProductValidate(a_product);
+                            if (err_arr.length > 0) {
+                                throw new Error(err_arr.join(';'));
+                            }
+                            yield mDB.db_ProductUpdate(a_product)
+                                .then(() => { result += 'Success update: ' + mClass.get_html_a_product(a_product); })
                                 .catch((err) => { result += err.message; });
                         }
                         catch (err) {
@@ -113,6 +118,17 @@ function get_body(param_obj) {
             else if (param_obj.method === 'GET' && param_obj.arg) {
                 if ('id' in param_obj.arg && param_obj.arg.id !== 'new') {
                     result = result_edit;
+                    yield mDB.db_ProductGet(param_obj.arg.id)
+                        .then((_product_db) => {
+                        const product_db = _product_db;
+                        //result += 'Success get: ' + JSON.stringify(product_db);
+                        result = result.replace("[gl_product_ID]", "" + product_db.ID);
+                        result = result.replace("[gl_product_name]", product_db.name);
+                        result = result.replace("[gl_product_articul]", product_db.articul);
+                        result = result.replace("[gl_product_description]", product_db.description);
+                        result = result.replace("[gl_product_price]", "" + product_db.price);
+                    })
+                        .catch((err) => { result += err.message; });
                 }
             }
         }
