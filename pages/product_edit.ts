@@ -6,8 +6,9 @@ export async function get_body(param_obj: mClass.RouteParam) {
     let result_edit = `
         <h1>Product EDIT page</h1>
         <div class='debug'>${JSON.stringify(param_obj)}</div>
-        <form action="/product_edit" method="POST">
-            ID:<input type="hidden" name="id" value="[gl_product_ID]" ><Br>
+        <div id="44">
+        <form name="form_edit_product" id="form_edit_product" action="/product_edit" method="POST">
+            <label><input type="hidden" name="id" value="[gl_product_ID]" >ID: [gl_product_ID] </label><Br>
             Название:<input type="text" name="name" value="[gl_product_name]"><Br>
             Артикул:<input type="text" name="articul" value="[gl_product_articul]"><Br>
             Описание:<input type="text" name="description" value="[gl_product_description]"><Br>
@@ -17,13 +18,15 @@ export async function get_body(param_obj: mClass.RouteParam) {
             <button value=cmd_delproduct  type="submit" name="btn" formaction="/product_edit">Удалить товар</button>
             <button value=""  type="submit" name="btn" formaction="/product">К списку товаров</button>
         </form>
+        </div>
         `;
 
 
     let result = `
         <h1>Product ADD page</h1>
         <div class='debug'>${JSON.stringify(param_obj)}</div>
-        <form action="/product_edit" method="POST">
+        <div>
+        <form name="form_add_product" id="form_add_product"  action="/product_edit" method="POST">
             Название:<input type="text" name="name" value=""><Br>
             Артикул:<input type="text" name="articul" value=""><Br>
             Описание:<input type="text" name="description" value=""><Br>
@@ -33,6 +36,7 @@ export async function get_body(param_obj: mClass.RouteParam) {
             <button value=cmd_addproduct  type="reset" name="btn" formaction="/product_edit">Очистить</button>
             <button value=""  type="submit" name="btn" formaction="/product">К списку товаров</button>
         </form>
+        </div>
         `;
 
 
@@ -110,7 +114,7 @@ export async function get_body(param_obj: mClass.RouteParam) {
                         const product_db = _product_db as mClass.Product;
                         //result += 'Success get: ' + JSON.stringify(product_db);
 
-                        result = result.replace("[gl_product_ID]", "" + product_db.ID);
+                        result = result.split("[gl_product_ID]").join( "" + product_db.ID);
                         result = result.replace("[gl_product_name]", product_db.name);
                         result = result.replace("[gl_product_articul]", product_db.articul);
                         result = result.replace("[gl_product_description]", product_db.description);

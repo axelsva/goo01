@@ -1,3 +1,4 @@
+import * as mClass from './_clases.js';
 
 
 export function getPage(url_obj: object) {
@@ -5,6 +6,7 @@ export function getPage(url_obj: object) {
     const pageTemplate = `
     <head>
         <link rel="stylesheet" type="text/css" href="/assets/css/style.css">
+        <script src="/assets/mscript.js"></script>
     </head>
     <body>
         <div class="glMain">
@@ -34,7 +36,18 @@ export function getPage(url_obj: object) {
     }
 
     function get_glMidLeft() {
-        return `Левая планка`;
+        return `
+        <div>
+            <form name="form_reg" id="form_reg" action="/user" method="POST">
+                <label><input id="" type="hidden" name="id" value=""> </label><Br>
+                <label>User:<input type="text" name="name" value=""></label><Br>
+                <label>Psw:<input type="text" name="psw" value=""></label><Br>
+                <br>
+                <input type="button" onclick="User_Login()" name="btn_enter" formaction="/" value="Enter">
+                <input id="btn_reg" type="button" name="btn_reg" formaction="/" value="Register">
+            </form>
+        </div>
+        `;
     }
 
     function get_glMidRight() {

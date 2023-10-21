@@ -7,18 +7,14 @@ export async function get_body(param_obj: mClass.RouteParam) {
     let result = `
     <h1>INIT page</h1>
     <div class='debug'>${JSON.stringify(param_obj)}</div>
-
-    <a href="/init?id=1">init id 1</a>
-
+    </br>
     <form  method="get">
-        <input type="text" name="answer" value="a2">Операционная система<Br>
        
-        <p>
             <button value=cmd_dbcreate  type="submit" name="btn" formaction="/init"> DB Create </button>
             <button value=4  type="submit" name="btn" formaction="/init">knBtn2</button>
-        </p>
-
+      
     </form>
+    </br>
     `;
 
 
@@ -29,17 +25,15 @@ export async function get_body(param_obj: mClass.RouteParam) {
             switch (param_obj.arg.btn) {
                 case 'cmd_dbcreate':
                     try {
-                        await mDB.db_CreateDataBase()
-                        result += 'DataBase created' ;
                         
-                        // await mDB.db_CreateDataBase()
-                        //     .then(() => { result += 'DataBase created' })
-                        //     .catch((err) => { result += err.message });
+                        await mDB.db_CreateDataBase()
+                            .then(() => { result += 'DataBase created' })
+                            .catch((err) => { result += err.message });
+
                     } catch (err) {
                         
                         result += (err as Error).message;
                         
-
                     }
 
                     break;

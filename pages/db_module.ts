@@ -3,8 +3,6 @@ import sqlite3 from 'sqlite3';
 import path from 'path';
 
 import * as mClass from './_clases.js';
-
-
 //sqlite3.verbose();
 
 const dbpath = path.join(__dirname, "../goo01.db");
@@ -14,29 +12,51 @@ export async function db_CreateDataBase() {
 
   return new Promise(function (resolve, reject) {
 
-    const db = new sqlite3.Database(dbpath, sqlite3.OPEN_READWRITE,
-      (err) => {
-        if (err) {
-          reject(err);
-        }
-      });
+    try {
 
-    db.run(`CREATE TABLE  product ( 
+      const db = new sqlite3.Database(dbpath, sqlite3.OPEN_READWRITE,
+        (err) => {
+          if (err) {
+            reject(err);
+          }
+        });
+
+      db.run(`CREATE TABLE IF NOT EXISTS product ( 
       ID INTEGER PRIMARY KEY AUTOINCREMENT,
       name   VARCHAR(50) NOT NULL,
       articul   VARCHAR(20) NOT NULL,
       description  VARCHAR(50) NOT NULL,
       price real NOT NULL );
       `,
-      (err) => {
-        if (err) {
-          reject(err);
-        } else {
-          resolve(1);
-        }
-      });
+        (err) => {
+          if (err) {
+            reject(err);
+          }
+        });
 
-    db.close();
+      db.run(`CREATE TABLE  IF NOT EXISTS users ( 
+        ID INTEGER PRIMARY KEY AUTOINCREMENT,
+        name   VARCHAR(50) NOT NULL,
+        sult   string NOT NULL,
+        hash string NOT NULL);
+        `,
+        (err) => {
+          if (err) {
+            reject(err);
+          }
+        });
+
+      db.close();
+      
+      resolve(1);
+
+    }
+
+    catch (err) {
+
+      reject(err);
+
+    }
   })
 }
 

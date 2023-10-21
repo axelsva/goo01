@@ -9,6 +9,8 @@ import qs from 'querystring';
 import * as mClass from './pages/_clases.js';
 
 
+const gl_user = {} as mClass.TUser;
+
 
 function go_run() {
 
@@ -24,9 +26,7 @@ function go_run() {
     let body = '';
 
     req.on('error', err => {
-      // This prints the error message and stack trace to `stderr`.
-      console.error("ERROR", err, err.stack);
-      console.error("ERROR2", JSON.stringify(err));
+      console.error("ERROR REQ:", JSON.stringify(err));
     });
 
     req.on('data', function (data) {
@@ -34,12 +34,12 @@ function go_run() {
       //      console.log("event ON ", req.method, req.url, body);
 
       body += data;
-      // 1e6 === 1 * Math.pow(10, 6) === 1 * 1000000 ~~~ 1MB
       if (body.length > 1e6) {
+        // 1e6 === 1 * Math.pow(10, 6) === 1 * 1000000 ~~~ 1MB
         // FLOOD ATTACK OR FAULTY CLIENT, NUKE REQUEST
         // return throw.console.error();
-        return;
         // req.connection.destroy();
+        return;
       }
     });
 
@@ -63,8 +63,11 @@ function go_run() {
       else if (req.method === 'GET') {
         param_obj.arg = url_obj.query;
       }
-      else {
-        param_obj.arg = url_obj.query;
+      else if (req.method === 'PUT'){
+        param_obj.arg = qs.parse(body);
+      }
+      else if (req.method === 'DEL'){
+        param_obj.arg = qs.parse(body);
       }
 
       console.log("param_obj: ", JSON.stringify(param_obj));
@@ -72,7 +75,6 @@ function go_run() {
       // static resourse
       if (param_obj.method === 'GET') {
 
-        //let filePath = path.join('.', a_param.pathname).split("%20").join(" ");
         const filePath = path.join(__dirname, param_obj.pathname).split("%20").join(" ");
         const ext = path.extname(param_obj.pathname);
 
@@ -92,8 +94,6 @@ function go_run() {
             // Setting default Content-Type
             let contentType = "text/plain";
 
-            // Checking if the extension of
-            // image is '.png'
             switch (ext) {
               case '.png': contentType = 'image/png'; break;
               case '.jpg': contentType = 'image/jpg'; break;
@@ -122,6 +122,39 @@ function go_run() {
       }
 
 
+      if (param_obj.pathname.includes('api/v1')) {
+
+        const srvAPIRoute = new Map();
+        srvAPIRoute.set('/api/v1/user', './api_v1/user');
+
+        let a_body = "";
+        if (srvAPIRoute.has(param_obj.pathname)) {
+
+          try {
+            const v_route = await import(srvAPIRoute.get(param_obj.pathname));
+            a_body = await v_route.get_body(param_obj);
+
+          } catch (_e) {
+            const e = _e as Error;
+            a_body = e.message;
+            console.log("srvAPIRoute", JSON.stringify(e));
+          }
+
+        } else {
+          a_body = "srvAPIRoute: Data not found";
+
+        }
+
+
+        res.writeHead(200, { 'Content-Type': 'application/json; charset=utf-8' });
+        res.write( JSON.stringify(a_body) );
+        res.end();
+        return;
+
+      }
+
+
+
       const srvRoute = new Map();
       srvRoute.set('/', './pages/home');
       srvRoute.set('/about', './pages/about');
@@ -139,13 +172,13 @@ function go_run() {
         try {
           const v_route = await import(srvRoute.get(param_obj.pathname));
           a_body = await v_route.get_body(param_obj);
-  
+
         } catch (_e) {
           const e = _e as Error;
           a_body = e.message;
           console.log("srvRoute", JSON.stringify(e));
         }
-  
+
       } else {
         a_body = "Page not found";
 

@@ -21,26 +21,39 @@ const dbpath = path_1.default.join(__dirname, "../goo01.db");
 function db_CreateDataBase() {
     return __awaiter(this, void 0, void 0, function* () {
         return new Promise(function (resolve, reject) {
-            const db = new sqlite3_1.default.Database(dbpath, sqlite3_1.default.OPEN_READWRITE, (err) => {
-                if (err) {
-                    reject(err);
-                }
-            });
-            db.run(`CREATE TABLE  product ( 
+            try {
+                const db = new sqlite3_1.default.Database(dbpath, sqlite3_1.default.OPEN_READWRITE, (err) => {
+                    if (err) {
+                        reject(err);
+                    }
+                });
+                db.run(`CREATE TABLE IF NOT EXISTS product ( 
       ID INTEGER PRIMARY KEY AUTOINCREMENT,
       name   VARCHAR(50) NOT NULL,
       articul   VARCHAR(20) NOT NULL,
       description  VARCHAR(50) NOT NULL,
       price real NOT NULL );
       `, (err) => {
-                if (err) {
-                    reject(err);
-                }
-                else {
-                    resolve(1);
-                }
-            });
-            db.close();
+                    if (err) {
+                        reject(err);
+                    }
+                });
+                db.run(`CREATE TABLE  IF NOT EXISTS users ( 
+        ID INTEGER PRIMARY KEY AUTOINCREMENT,
+        name   VARCHAR(50) NOT NULL,
+        sult   string NOT NULL,
+        hash string NOT NULL);
+        `, (err) => {
+                    if (err) {
+                        reject(err);
+                    }
+                });
+                db.close();
+                resolve(1);
+            }
+            catch (err) {
+                reject(err);
+            }
         });
     });
 }

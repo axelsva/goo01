@@ -40,6 +40,7 @@ const fs_1 = __importDefault(require("fs"));
 const path_1 = __importDefault(require("path"));
 const url_1 = __importDefault(require("url"));
 const querystring_1 = __importDefault(require("querystring"));
+const gl_user = {};
 function go_run() {
     const options = {
         key: fs_1.default.readFileSync('./key/key.pem'),
@@ -48,19 +49,17 @@ function go_run() {
     https_1.default.createServer(options, (req, res) => __awaiter(this, void 0, void 0, function* () {
         let body = '';
         req.on('error', err => {
-            // This prints the error message and stack trace to `stderr`.
-            console.error("ERROR", err, err.stack);
-            console.error("ERROR2", JSON.stringify(err));
+            console.error("ERROR REQ:", JSON.stringify(err));
         });
         req.on('data', function (data) {
             //      console.log("event ON ", req.method, req.url, body);
             body += data;
-            // 1e6 === 1 * Math.pow(10, 6) === 1 * 1000000 ~~~ 1MB
             if (body.length > 1e6) {
+                // 1e6 === 1 * Math.pow(10, 6) === 1 * 1000000 ~~~ 1MB
                 // FLOOD ATTACK OR FAULTY CLIENT, NUKE REQUEST
                 // return throw.console.error();
-                return;
                 // req.connection.destroy();
+                return;
             }
         });
         req.on('end', function () {
@@ -80,13 +79,15 @@ function go_run() {
                 else if (req.method === 'GET') {
                     param_obj.arg = url_obj.query;
                 }
-                else {
-                    param_obj.arg = url_obj.query;
+                else if (req.method === 'PUT') {
+                    param_obj.arg = querystring_1.default.parse(body);
+                }
+                else if (req.method === 'DEL') {
+                    param_obj.arg = querystring_1.default.parse(body);
                 }
                 console.log("param_obj: ", JSON.stringify(param_obj));
                 // static resourse
                 if (param_obj.method === 'GET') {
-                    //let filePath = path.join('.', a_param.pathname).split("%20").join(" ");
                     const filePath = path_1.default.join(__dirname, param_obj.pathname).split("%20").join(" ");
                     const ext = path_1.default.extname(param_obj.pathname);
                     if (ext) {
@@ -101,8 +102,6 @@ function go_run() {
                             // }
                             // Setting default Content-Type
                             let contentType = "text/plain";
-                            // Checking if the extension of
-                            // image is '.png'
                             switch (ext) {
                                 case '.png':
                                     contentType = 'image/png';
@@ -136,6 +135,29 @@ function go_run() {
                         });
                         return;
                     }
+                }
+                if (param_obj.pathname.includes('api/v1')) {
+                    const srvAPIRoute = new Map();
+                    srvAPIRoute.set('/api/v1/user', './api_v1/user');
+                    let a_body = "";
+                    if (srvAPIRoute.has(param_obj.pathname)) {
+                        try {
+                            const v_route = yield Promise.resolve(`${srvAPIRoute.get(param_obj.pathname)}`).then(s => __importStar(require(s)));
+                            a_body = yield v_route.get_body(param_obj);
+                        }
+                        catch (_e) {
+                            const e = _e;
+                            a_body = e.message;
+                            console.log("srvAPIRoute", JSON.stringify(e));
+                        }
+                    }
+                    else {
+                        a_body = "srvAPIRoute: Data not found";
+                    }
+                    res.writeHead(200, { 'Content-Type': 'application/json; charset=utf-8' });
+                    res.write(JSON.stringify(a_body));
+                    res.end();
+                    return;
                 }
                 const srvRoute = new Map();
                 srvRoute.set('/', './pages/home');
