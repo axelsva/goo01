@@ -12,7 +12,7 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.db_ProductUpdate = exports.db_ProductGet = exports.db_ProductList = exports.db_ProductAdd = exports.db_CreateDataBase = void 0;
+exports.db_AddToCart = exports.db_UserGet = exports.db_UserAdd = exports.db_ProductUpdate = exports.db_ProductGet = exports.db_ProductList = exports.db_ProductAdd = exports.db_CreateDataBase = void 0;
 //import fs from "fs";
 const sqlite3_1 = __importDefault(require("sqlite3"));
 const path_1 = __importDefault(require("path"));
@@ -40,10 +40,20 @@ function db_CreateDataBase() {
                 });
                 db.run(`CREATE TABLE  IF NOT EXISTS users ( 
         ID INTEGER PRIMARY KEY AUTOINCREMENT,
-        name   VARCHAR(50) NOT NULL,
-        sult   string NOT NULL,
+        name   VARCHAR(50) NOT NULL UNIQUE,
+        salt   string NOT NULL,
         hash string NOT NULL);
         `, (err) => {
+                    if (err) {
+                        reject(err);
+                    }
+                });
+                db.run(`CREATE TABLE  IF NOT EXISTS carts ( 
+          ID INTEGER PRIMARY KEY AUTOINCREMENT,
+          id_user INTEGER NOT NULL,
+          id_product INTEGER NOT NULL,
+          sum INTEGER NOT NULL);
+          `, (err) => {
                     if (err) {
                         reject(err);
                     }
@@ -153,3 +163,70 @@ function db_ProductUpdate(product) {
     });
 }
 exports.db_ProductUpdate = db_ProductUpdate;
+function db_UserAdd(user) {
+    return __awaiter(this, void 0, void 0, function* () {
+        return new Promise(function (resolve, reject) {
+            const db = new sqlite3_1.default.Database(dbpath, sqlite3_1.default.OPEN_READWRITE, (err) => {
+                if (err) {
+                    reject(err);
+                }
+            });
+            db.run('INSERT INTO users(name, salt, hash)  VALUES( ?,?,?)', [user.name, user.salt, user.hash], function (err) {
+                if (err) {
+                    reject(err);
+                }
+                else {
+                    resolve({ "lastID": this.lastID });
+                }
+            });
+            db.close();
+        });
+    });
+}
+exports.db_UserAdd = db_UserAdd;
+function db_UserGet(a_name) {
+    return __awaiter(this, void 0, void 0, function* () {
+        return new Promise(function (resolve, reject) {
+            const db = new sqlite3_1.default.Database(dbpath, sqlite3_1.default.OPEN_READWRITE, (err) => {
+                if (err) {
+                    reject(err);
+                }
+            });
+            const query_str = 'select * from users where name=?';
+            db.get(query_str, [a_name], (err, rows) => {
+                if (err) {
+                    reject(err);
+                }
+                else {
+                    resolve(rows);
+                }
+            });
+            db.close();
+        });
+    });
+}
+exports.db_UserGet = db_UserGet;
+function db_AddToCart(id, idp, sum) {
+    return __awaiter(this, void 0, void 0, function* () {
+        return new Promise(function (resolve, reject) {
+            const db = new sqlite3_1.default.Database(dbpath, sqlite3_1.default.OPEN_READWRITE, (err) => {
+                if (err) {
+                    reject(err);
+                }
+            });
+            db.run('INSERT INTO carts(id_user, id_product, sum)  VALUES( ?,?,?)', [id,
+                idp,
+                sum
+            ], (err) => {
+                if (err) {
+                    reject(err);
+                }
+                else {
+                    resolve(1);
+                }
+            });
+            db.close();
+        });
+    });
+}
+exports.db_AddToCart = db_AddToCart;

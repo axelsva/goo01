@@ -46,6 +46,7 @@ export async function get_body(param_obj: mClass.RouteParam) {
                     result += `<div class="p_name"> ${row.name}</div>`;
                     result += `<div class="p_articul"> ${row.articul}</div>`;
                     result += `<div class="p_price"> ${row.price}</div>`;
+                    result += `<input id="btn_addtocart" type="button" name="${row.ID}" onclick="Add_ToCart(${row.ID},${row.price})"   value="В Коризну">`;
                     result += '</div>';
                     result += `</hr>`;
                     //}

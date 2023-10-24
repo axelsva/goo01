@@ -1,7 +1,7 @@
 import * as mClass from './_clases.js';
 
 
-export function getPage(url_obj: object) {
+export function getPage(param_obj: mClass.RouteParam) {
 
     const pageTemplate = `
     <head>
@@ -36,18 +36,36 @@ export function getPage(url_obj: object) {
     }
 
     function get_glMidLeft() {
-        return `
-        <div>
-            <form name="form_reg" id="form_reg" action="/user" method="POST">
-                <label><input id="" type="hidden" name="id" value=""> </label><Br>
-                <label>User:<input type="text" name="name" value=""></label><Br>
-                <label>Psw:<input type="text" name="psw" value=""></label><Br>
-                <br>
-                <input type="button" onclick="User_Login()" name="btn_enter" formaction="/" value="Enter">
-                <input id="btn_reg" type="button" name="btn_reg" formaction="/" value="Register">
-            </form>
-        </div>
-        `;
+
+        if (param_obj.user && 'id' in param_obj.user && 'name' in param_obj.user ) {
+
+            return  `
+            <div>
+                <form name="form_reg" id="form_reg" action="/user" method="POST">
+                    USER: ${param_obj.user.name}
+                    <label><input id="${param_obj.user.id}" type="hidden" name="id" value=""> </label><Br>
+                    <br>
+                    <input id="btn_logout" type="button" name="btn_logout"  value="Logout">
+                </form>
+                <div id="reg_user_status"></div>
+            </div>
+            `;
+
+        } else {
+            return `
+            <div>
+                <form name="form_reg" id="form_reg" action="/user" method="POST">
+                    <label><input id="" type="hidden" name="id" value=""> </label><Br>
+                    <label>User:<input type="text" name="name" value=""></label><Br>
+                    <label>Psw:<input type="text" name="psw" value=""></label><Br>
+                    <br>
+                    <input id="btn_login" type="button" onclick="User_Login()" name="btn_enter"  value="Enter">
+                    <input id="btn_reg" type="button" name="btn_reg"  value="Register">
+                </form>
+                <div id="reg_user_status"></div>
+            </div>
+            `;
+        }
     }
 
     function get_glMidRight() {
@@ -55,9 +73,11 @@ export function getPage(url_obj: object) {
     }
 
     function get_glBottom() {
-        return `Это подвал:${JSON.stringify(url_obj)}`;
+        return `
+            Это подвал:<br>
+            ${JSON.stringify(param_obj)}
+        `;
     }
-
 
 
     let a_page = pageTemplate;

@@ -6,6 +6,10 @@ import path from 'path';
 import url from 'url';
 import qs from 'querystring';
 
+
+
+
+
 import * as mClass from './pages/_clases.js';
 
 
@@ -51,8 +55,10 @@ function go_run() {
         method: "" + req.method,
         url: "" + req.url,
         pathname: "",
+        user: {},
         arg: {},
       };
+
 
       const url_obj = url.parse("" + req.url, true);
       param_obj.pathname = "" + url_obj.pathname;
@@ -63,10 +69,10 @@ function go_run() {
       else if (req.method === 'GET') {
         param_obj.arg = url_obj.query;
       }
-      else if (req.method === 'PUT'){
+      else if (req.method === 'PUT') {
         param_obj.arg = qs.parse(body);
       }
-      else if (req.method === 'DEL'){
+      else if (req.method === 'DEL') {
         param_obj.arg = qs.parse(body);
       }
 
@@ -121,11 +127,15 @@ function go_run() {
         }
       }
 
+      const cookie_str = req.headers.cookie || '';
+      param_obj.user =  mClass.GetUser_FromCookies(cookie_str);
 
-      if (param_obj.pathname.includes('api/v1')) {
+
+      if (param_obj.pathname.includes('/api/v1')) {
 
         const srvAPIRoute = new Map();
         srvAPIRoute.set('/api/v1/user', './api_v1/user');
+        srvAPIRoute.set('/api/v1/cart', './api_v1/cart')
 
         let a_body = "";
         if (srvAPIRoute.has(param_obj.pathname)) {
@@ -147,7 +157,7 @@ function go_run() {
 
 
         res.writeHead(200, { 'Content-Type': 'application/json; charset=utf-8' });
-        res.write( JSON.stringify(a_body) );
+        res.write(JSON.stringify(a_body));
         res.end();
         return;
 
@@ -164,7 +174,7 @@ function go_run() {
 
       let a_page = "";
       const defaultPage = await import("./pages/_default.js");
-      a_page = await defaultPage.getPage({ "url_obj": url_obj, "method": req.method, "param_obj": param_obj });
+      a_page = await defaultPage.getPage( param_obj );
 
       let a_body = "";
       if (srvRoute.has(param_obj.pathname)) {

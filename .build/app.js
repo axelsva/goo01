@@ -40,6 +40,7 @@ const fs_1 = __importDefault(require("fs"));
 const path_1 = __importDefault(require("path"));
 const url_1 = __importDefault(require("url"));
 const querystring_1 = __importDefault(require("querystring"));
+const mClass = __importStar(require("./pages/_clases.js"));
 const gl_user = {};
 function go_run() {
     const options = {
@@ -69,6 +70,7 @@ function go_run() {
                     method: "" + req.method,
                     url: "" + req.url,
                     pathname: "",
+                    user: {},
                     arg: {},
                 };
                 const url_obj = url_1.default.parse("" + req.url, true);
@@ -136,9 +138,12 @@ function go_run() {
                         return;
                     }
                 }
-                if (param_obj.pathname.includes('api/v1')) {
+                const cookie_str = req.headers.cookie || '';
+                param_obj.user = mClass.GetUser_FromCookies(cookie_str);
+                if (param_obj.pathname.includes('/api/v1')) {
                     const srvAPIRoute = new Map();
                     srvAPIRoute.set('/api/v1/user', './api_v1/user');
+                    srvAPIRoute.set('/api/v1/cart', './api_v1/cart');
                     let a_body = "";
                     if (srvAPIRoute.has(param_obj.pathname)) {
                         try {
@@ -167,7 +172,7 @@ function go_run() {
                 srvRoute.set('/init', './pages/init');
                 let a_page = "";
                 const defaultPage = yield Promise.resolve().then(() => __importStar(require("./pages/_default.js")));
-                a_page = yield defaultPage.getPage({ "url_obj": url_obj, "method": req.method, "param_obj": param_obj });
+                a_page = yield defaultPage.getPage(param_obj);
                 let a_body = "";
                 if (srvRoute.has(param_obj.pathname)) {
                     try {

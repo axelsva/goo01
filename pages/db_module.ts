@@ -36,8 +36,8 @@ export async function db_CreateDataBase() {
 
       db.run(`CREATE TABLE  IF NOT EXISTS users ( 
         ID INTEGER PRIMARY KEY AUTOINCREMENT,
-        name   VARCHAR(50) NOT NULL,
-        sult   string NOT NULL,
+        name   VARCHAR(50) NOT NULL UNIQUE,
+        salt   string NOT NULL,
         hash string NOT NULL);
         `,
         (err) => {
@@ -46,8 +46,21 @@ export async function db_CreateDataBase() {
           }
         });
 
+      db.run(`CREATE TABLE  IF NOT EXISTS carts ( 
+          ID INTEGER PRIMARY KEY AUTOINCREMENT,
+          id_user INTEGER NOT NULL,
+          id_product INTEGER NOT NULL,
+          sum INTEGER NOT NULL);
+          `,
+        (err) => {
+          if (err) {
+            reject(err);
+          }
+        });
+
+
       db.close();
-      
+
       resolve(1);
 
     }
@@ -124,7 +137,6 @@ export async function db_ProductList() {
 
 
 
-
 export async function db_ProductGet(a_id: number) {
 
   return new Promise(function (resolve, reject) {
@@ -173,6 +185,89 @@ export async function db_ProductUpdate(product: mClass.Product) {
       product.description,
       product.price,
       product.ID,
+      ],
+
+      (err) => {
+        if (err) {
+          reject(err);
+        } else {
+          resolve(1);
+        }
+      });
+
+    db.close();
+  })
+}
+
+export async function db_UserAdd(user: mClass.TUser) {
+
+  return new Promise(function (resolve, reject) {
+
+    const db = new sqlite3.Database(dbpath, sqlite3.OPEN_READWRITE,
+      (err) => {
+        if (err) {
+          reject(err);
+        }
+      });
+
+    db.run('INSERT INTO users(name, salt, hash)  VALUES( ?,?,?)',
+      [user.name, user.salt, user.hash],
+
+      function (err) {
+        if (err) {
+          reject(err);
+        } else {
+          resolve({ "lastID": this.lastID });
+        }
+      });
+
+    db.close();
+
+  })
+}
+
+
+export async function db_UserGet(a_name: string) {
+
+  return new Promise(function (resolve, reject) {
+
+    const db = new sqlite3.Database(dbpath, sqlite3.OPEN_READWRITE,
+      (err) => {
+        if (err) {
+          reject(err);
+        }
+      });
+
+    const query_str = 'select * from users where name=?';
+
+    db.get(query_str, [a_name],
+      (err, rows) => {
+        if (err) {
+          reject(err);
+        } else {
+          resolve(rows);
+        }
+      });
+
+    db.close();
+  })
+}
+
+export async function db_AddToCart(id:number, idp:number, sum:number) {
+
+  return new Promise(function (resolve, reject) {
+
+    const db = new sqlite3.Database(dbpath, sqlite3.OPEN_READWRITE,
+      (err) => {
+        if (err) {
+          reject(err);
+        }
+      });
+
+    db.run('INSERT INTO carts(id_user, id_product, sum)  VALUES( ?,?,?)',
+      [id,
+        idp,
+        sum
       ],
 
       (err) => {

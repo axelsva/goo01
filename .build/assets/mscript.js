@@ -3,11 +3,47 @@ console.log("кукареку");
 
 function User_Login() {
 
-    const form_reg = document.querySelector('#form_reg');
-    const data_reg = new FormData(form_reg);
+    event.preventDefault();
 
-    console.log("User_Login: " + JSON.stringify(data_reg));
+    const data_reg = new FormData(document.forms.form_reg);
+    const q_str = new URLSearchParams(data_reg).toString() + "&login=1";
 
+    console.log("User_Login: " + q_str);
+
+    const opt = {
+        method: 'POST',
+        body: q_str,
+        headers: {
+            'Content-type': 'application/json; charset=UTF-8',
+        }
+    };
+
+    fetch('/api/v1/user', opt)
+        .then((response) => response.json())
+        .then((data) => {
+            console.log(data);
+
+            const div_status = document.querySelector("#reg_user_status");
+
+            if (data.result === "ok") {
+
+                div_status.innerHTML = "" + data_reg.get("name") + " - user login succes";
+                document.cookie = data.data.cook;
+                return;
+
+            } else if (data.result === "error") {
+                div_status.innerHTML = "" + data.message;
+
+            } else {
+                div_status.innerHTML = "";
+
+            }
+
+            User_LogOut();
+        })
+        .catch(
+            () => { User_LogOut(); }
+        )
 }
 
 function User_Register(event) {
@@ -24,26 +60,92 @@ function User_Register(event) {
         body: q_str,
         headers: {
             'Content-type': 'application/json; charset=UTF-8',
-          }
+        }
     };
 
     fetch('/api/v1/user', opt)
         .then((response) => response.json())
         .then((data) => {
             console.log(data);
+
+            const div_status = document.querySelector("#reg_user_status");
+
+            if (data.result === "ok") {
+                div_status.innerHTML = "" + data_reg.get("name") + " - user registered. Please login.";
+
+            } else if (data.result === "error") {
+                div_status.innerHTML = "" + data.message;
+
+            } else {
+                div_status.innerHTML = "";
+
+            }
         })
+}
 
+function User_LogOut(event) {
 
+    // event.preventDefault();
+    console.log("User_LogOut");
+    document.cookie = "s_uid=0; max-age=0";
+
+    if (event) {
+        const div_status = document.querySelector("#reg_user_status");
+        div_status.innerHTML = 'User LogOut';
+    }
 
 }
 
+function Add_ToCart(a_ID, a_sum) {
+    console.log("Add_ToCart - ", a_ID);
+
+    const q_str = `idp=${a_ID}&sum=${a_sum}`;
+
+    const opt = {
+        method: 'POST',
+        body: q_str,
+        headers: {
+            'Content-type': 'application/json; charset=UTF-8',
+        }
+    };
+
+    fetch('/api/v1/cart', opt)
+        .then((response) => response.json())
+        .then((data) => {
+            console.log(data);
+
+            //const div_status = document.querySelector("#reg_user_status");
+
+            if (data.result === "ok") {
+
+                console.log(data.data);
+                //div_status.innerHTML = "" + data_reg.get("name") + " - user registered";
+
+            } else if (data.result === "error") {
+                div_status.innerHTML = "" + data.message;
+
+            } else {
+                div_status.innerHTML = "";
+
+            }
+        })
+}
 
 
 document.addEventListener("DOMContentLoaded", () => {
 
 
-    let btn2 = document.querySelector("#btn_reg");
-    btn2.addEventListener('click', User_Register);
+    let btn_User_Register = document.querySelector("#btn_reg");
+    if (btn_User_Register) {
+        btn_User_Register.addEventListener('click', User_Register);
+    }
+
+
+    let btn_LogOut = document.querySelector("#btn_logout");
+    if (btn_LogOut) {
+        btn_LogOut.addEventListener('click', User_LogOut);
+    }
+
 
 });
 
