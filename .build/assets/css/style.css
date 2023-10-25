@@ -1,7 +1,53 @@
 .glMain {
-    min-width: 300px;
-    max-width: 800px;
+    max-width: 1000px;
+    margin: auto;
+    background-color: #b5cef5;
+    -webkit-text-size-adjust: auto
 }
+
+@media  screen and (min-width: 300px) and (max-width: 980px)  {
+    .glMain {
+        min-width: 400px;
+        width: 90%;
+        margin: auto;
+        background-color: #e6d1f3;
+    }
+}
+
+#glTop {
+    height: 150px;
+    background-image:url(/assets/img/MyCollages.jpg);
+    overflow: hidden;
+}
+
+#glTop10, #glTop10 {
+    overflow: hidden;
+
+}
+
+#glTop1 {
+    background-color: white;
+    font-size: 40px;
+    float: left;
+    margin: 10px;
+    border-radius: 5px;
+    padding: 2px;
+}
+
+#glTop2 {
+
+    float: left;
+
+}
+#glTop3 {
+    background-color: white;
+    font-size: 30px;
+    float: right;
+    margin: 10px 10px 10px 10px;
+    border-radius: 5px;
+    padding: 2px;
+}
+
 
 .glMidle {
     overflow: hidden;
@@ -11,17 +57,40 @@
 .glMidLeft {
     width: 200px;
     min-width: 200px;
-    background-color: lightgrey;
     float: left;
+    background-color: white;
+    margin: 2px;
+    padding: 5px;
+    border-radius: 5px;
 }
 
 .glMidRight {
     float: none;
     overflow: auto;
 
-    min-width: 200px;
-    background-color: rgb(115, 207, 207);
+    min-width: 300px;
+    background-color: white;
+    margin: 2px;
+    padding: 5px;
+    border-radius: 5px;
+
 }
+
+.RoundRectDark {
+    margin: 2px;
+    padding: 10px;
+    border-radius: 5px;
+    background-color: #b5cef5;
+}
+
+.RoundRectDark a {
+    margin: 2px;
+    padding: 5px;
+    border-radius: 5px;
+    background-color: #312c4d;
+    color: white;
+}
+
 
 .productitemcaption {
     overflow: hidden;
@@ -29,39 +98,55 @@
 
 .productitem {
     overflow: hidden;
+    margin: 2px;
 }
 
-.p_id  {
+.p_id {
     float: left;
     width: 40px;
-    text-align: right;    
-    padding: 2px;
+    text-align: right;
+    padding: 5px;
 }
 
-.p_name  {
+.p_name {
     float: left;
     min-width: 150px;
     word-wrap: break-word;
-    padding: 2px;
+    padding: 5px;
 }
 
-.p_articul  {
+.p_articul {
     float: left;
     width: 70px;
     word-wrap: break-word;
-    padding: 2px;
+    padding: 5px;
 }
 
 .p_price {
     float: left;
     width: 70px;
-    text-align: right;    
-    padding: 2px;
+    text-align: right;
+    padding: 5px;
+}
+
+.p_img {
+    float: left;
+}
+
+
+.productitem img {
+    width: 100px;
+    height: 100px;
+    object-fit: cover;
+}
+
+input[name="price"] {
+    width: 70px;
 }
 
 
 h1 {
-    color: blue
+    color: #04145c;
 }
 
 .debug {

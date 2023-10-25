@@ -5,7 +5,6 @@ export async function get_body(param_obj: mClass.RouteParam) {
 
     let result_edit = `
         <h1>Product EDIT page</h1>
-        <div class='debug'>${JSON.stringify(param_obj)}</div>
         <div id="44">
         <form name="form_edit_product" id="form_edit_product" action="/product_edit" method="POST">
             <label><input type="hidden" name="id" value="[gl_product_ID]" >ID: [gl_product_ID] </label><Br>
@@ -24,7 +23,6 @@ export async function get_body(param_obj: mClass.RouteParam) {
 
     let result = `
         <h1>Product ADD page</h1>
-        <div class='debug'>${JSON.stringify(param_obj)}</div>
         <div>
         <form name="form_add_product" id="form_add_product"  action="/product_edit" method="POST">
             Название:<input type="text" name="name" value=""><Br>

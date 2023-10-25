@@ -93,7 +93,7 @@ function db_ProductAdd(product) {
     });
 }
 exports.db_ProductAdd = db_ProductAdd;
-function db_ProductList() {
+function db_ProductList(a_name, a_price) {
     return __awaiter(this, void 0, void 0, function* () {
         return new Promise(function (resolve, reject) {
             const db = new sqlite3_1.default.Database(dbpath, sqlite3_1.default.OPEN_READWRITE, (err) => {
@@ -101,15 +101,30 @@ function db_ProductList() {
                     reject(err);
                 }
             });
-            const query_str = 'select * from product order by name';
-            db.all(query_str, [], (err, rows) => {
-                if (err) {
-                    reject(err);
-                }
-                else {
-                    resolve(rows);
-                }
-            });
+            let query_str = '';
+            if (a_name === '') {
+                query_str = 'select * from product order by name';
+                db.all(query_str, [], (err, rows) => {
+                    if (err) {
+                        reject(err);
+                    }
+                    else {
+                        resolve(rows);
+                    }
+                });
+            }
+            else {
+                console.log(a_name, a_price);
+                query_str = 'select * from product where name = ? and price  >= ? ';
+                db.all(query_str, [a_name, a_price], (err, rows) => {
+                    if (err) {
+                        reject(err);
+                    }
+                    else {
+                        resolve(rows);
+                    }
+                });
+            }
             db.close();
         });
     });

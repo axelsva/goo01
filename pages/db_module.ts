@@ -104,7 +104,7 @@ export async function db_ProductAdd(product: mClass.Product) {
   })
 }
 
-export async function db_ProductList() {
+export async function db_ProductList(a_name: string, a_price: number) {
 
   return new Promise(function (resolve, reject) {
 
@@ -115,21 +115,45 @@ export async function db_ProductList() {
         }
       });
 
-    const query_str = 'select * from product order by name';
+    let query_str = ''
 
-    db.all(query_str, [],
-      (err, rows) => {
-        if (err) {
+    if (a_name === '') {
 
-          reject(err);
+      query_str = 'select * from product order by name';
+      db.all(query_str, [],
 
-        } else {
+        (err, rows) => {
+          if (err) {
 
-          resolve(rows);
+            reject(err);
 
-        }
-      });
+          } else {
 
+            resolve(rows);
+
+          }
+        });
+    }
+
+    else {
+
+      console.log(a_name,a_price);
+
+      query_str = 'select * from product where name = ? and price  >= ? ';
+
+      db.all(query_str, [a_name, a_price],
+        (err, rows) => {
+          if (err) {
+
+            reject(err);
+
+          } else {
+
+            resolve(rows);
+
+          }
+        });
+    }
 
     db.close();
   })
@@ -253,7 +277,7 @@ export async function db_UserGet(a_name: string) {
   })
 }
 
-export async function db_AddToCart(id:number, idp:number, sum:number) {
+export async function db_AddToCart(id: number, idp: number, sum: number) {
 
   return new Promise(function (resolve, reject) {
 

@@ -1,5 +1,6 @@
 import * as mClass from './_clases.js';
 
+//<link rel="stylesheet" href="/assets/css/mob_style.css" media="(max-width: 480px)">
 
 export function getPage(param_obj: mClass.RouteParam) {
 
@@ -7,6 +8,7 @@ export function getPage(param_obj: mClass.RouteParam) {
     <head>
         <link rel="stylesheet" type="text/css" href="/assets/css/style.css">
         <script src="/assets/mscript.js"></script>
+        <meta name="viewport" content="width=device-width, user-scalable=yes">
     </head>
     <body>
         <div class="glMain">
@@ -22,24 +24,27 @@ export function getPage(param_obj: mClass.RouteParam) {
 
 
     function get_glTop() {
-        const a_tel = "8-800-88-98=87";
+        const a_tel = "8-800-888-7777";
         const result = `
-        "ооо рога и копыта", tel:${a_tel}
-        <a href="/"><img src="/assets/img/imgTop.gif" 
-         width="100" height="100" alt="To home">home</a>
-        <a href="/about"><img src="/assets/img/imgAbout.png" 
-            width="100" height="100" alt="To About">about</a>
-        <a href="/product?id=2">product</a>
-        <a href="/init">init</a>
+        <div id="glTop">
+            <div id="glTop10">
+                <div class="glTop1" id="glTop1"> "Goo Goo Goo ..."  </div>
+            </div>
+            <div id="glTop20">
+                <div class="glTop1" id="glTop3"> tel:${a_tel} </div>    
+            </div>         
+        </div>
         `;
         return result;
     }
 
     function get_glMidLeft() {
 
-        if (param_obj.user && 'id' in param_obj.user && 'name' in param_obj.user ) {
+        let result = '';
 
-            return  `
+        if (param_obj.user && 'id' in param_obj.user && 'name' in param_obj.user) {
+
+            result += `
             <div>
                 <form name="form_reg" id="form_reg" action="/user" method="POST">
                     USER: ${param_obj.user.name}
@@ -52,7 +57,7 @@ export function getPage(param_obj: mClass.RouteParam) {
             `;
 
         } else {
-            return `
+            result += `
             <div>
                 <form name="form_reg" id="form_reg" action="/user" method="POST">
                     <label><input id="" type="hidden" name="id" value=""> </label><Br>
@@ -66,6 +71,16 @@ export function getPage(param_obj: mClass.RouteParam) {
             </div>
             `;
         }
+
+        result += `
+            ${mClass.get_html_a('Home', '/')} </br>
+            ${mClass.get_html_a('About', '/about')} </br>
+            ${mClass.get_html_a('Products', '/product')} </br>
+            <hr>
+            ${mClass.get_html_a('Init', '/init')} </br>
+        `;
+
+        return result;
     }
 
     function get_glMidRight() {

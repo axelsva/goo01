@@ -6,13 +6,9 @@ export async function get_body(param_obj: mClass.RouteParam) {
 
     let result = `
     <h1>INIT page</h1>
-    <div class='debug'>${JSON.stringify(param_obj)}</div>
     </br>
     <form  method="get">
-       
-            <button value=cmd_dbcreate  type="submit" name="btn" formaction="/init"> DB Create </button>
-            <button value=4  type="submit" name="btn" formaction="/init">knBtn2</button>
-      
+        <button value=cmd_dbcreate  type="submit" name="btn" formaction="/init"> DB Create </button>
     </form>
     </br>
     `;

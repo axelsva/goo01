@@ -1,11 +1,38 @@
 "use strict";
+var __createBinding = (this && this.__createBinding) || (Object.create ? (function(o, m, k, k2) {
+    if (k2 === undefined) k2 = k;
+    var desc = Object.getOwnPropertyDescriptor(m, k);
+    if (!desc || ("get" in desc ? !m.__esModule : desc.writable || desc.configurable)) {
+      desc = { enumerable: true, get: function() { return m[k]; } };
+    }
+    Object.defineProperty(o, k2, desc);
+}) : (function(o, m, k, k2) {
+    if (k2 === undefined) k2 = k;
+    o[k2] = m[k];
+}));
+var __setModuleDefault = (this && this.__setModuleDefault) || (Object.create ? (function(o, v) {
+    Object.defineProperty(o, "default", { enumerable: true, value: v });
+}) : function(o, v) {
+    o["default"] = v;
+});
+var __importStar = (this && this.__importStar) || function (mod) {
+    if (mod && mod.__esModule) return mod;
+    var result = {};
+    if (mod != null) for (var k in mod) if (k !== "default" && Object.prototype.hasOwnProperty.call(mod, k)) __createBinding(result, mod, k);
+    __setModuleDefault(result, mod);
+    return result;
+};
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.getPage = void 0;
+const mClass = __importStar(require("./_clases.js"));
+//<link rel="stylesheet" href="/assets/css/mob_style.css" media="(max-width: 480px)">
 function getPage(param_obj) {
     const pageTemplate = `
     <head>
         <link rel="stylesheet" type="text/css" href="/assets/css/style.css">
+        
         <script src="/assets/mscript.js"></script>
+        <meta name="viewport" content="width=device-width, user-scalable=yes">
     </head>
     <body>
         <div class="glMain">
@@ -19,21 +46,23 @@ function getPage(param_obj) {
     </body>
         `;
     function get_glTop() {
-        const a_tel = "8-800-88-98=87";
+        const a_tel = "8-800-888-7777";
         const result = `
-        "ооо рога и копыта", tel:${a_tel}
-        <a href="/"><img src="/assets/img/imgTop.gif" 
-         width="100" height="100" alt="To home">home</a>
-        <a href="/about"><img src="/assets/img/imgAbout.png" 
-            width="100" height="100" alt="To About">about</a>
-        <a href="/product?id=2">product</a>
-        <a href="/init">init</a>
+        <div id="glTop">
+            <div id="glTop10">
+                <div class="glTop1" id="glTop1"> "Goo Goo Goo ..."  </div>
+            </div>
+            <div id="glTop20">
+                <div class="glTop1" id="glTop3"> tel:${a_tel} </div>    
+            </div>         
+        </div>
         `;
         return result;
     }
     function get_glMidLeft() {
+        let result = '';
         if (param_obj.user && 'id' in param_obj.user && 'name' in param_obj.user) {
-            return `
+            result += `
             <div>
                 <form name="form_reg" id="form_reg" action="/user" method="POST">
                     USER: ${param_obj.user.name}
@@ -46,7 +75,7 @@ function getPage(param_obj) {
             `;
         }
         else {
-            return `
+            result += `
             <div>
                 <form name="form_reg" id="form_reg" action="/user" method="POST">
                     <label><input id="" type="hidden" name="id" value=""> </label><Br>
@@ -60,6 +89,14 @@ function getPage(param_obj) {
             </div>
             `;
         }
+        result += `
+            ${mClass.get_html_a('Home', '/')} </br>
+            ${mClass.get_html_a('About', '/about')} </br>
+            ${mClass.get_html_a('Products', '/product')} </br>
+            <hr>
+            ${mClass.get_html_a('Init', '/init')} </br>
+        `;
+        return result;
     }
     function get_glMidRight() {
         return `[glMidRight]`;

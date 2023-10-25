@@ -88,20 +88,13 @@ function go_run() {
                     param_obj.arg = querystring_1.default.parse(body);
                 }
                 console.log("param_obj: ", JSON.stringify(param_obj));
-                // static resourse
+                // static resourse/file
                 if (param_obj.method === 'GET') {
                     const filePath = path_1.default.join(__dirname, param_obj.pathname).split("%20").join(" ");
                     const ext = path_1.default.extname(param_obj.pathname);
                     if (ext) {
                         //console.log('Static resourse: ', __dirname, filePath, ext);
-                        // Checking if the path exists
-                        fs_1.default.exists(filePath, function (exists) {
-                            // if (!exists) {
-                            //   res.writeHead(404, { "Content-Type": "text/plain" });
-                            //   res.end("404 Not Found");
-                            //   console.log('static --------------404');
-                            //   return;
-                            // }
+                        try {
                             // Setting default Content-Type
                             let contentType = "text/plain";
                             switch (ext) {
@@ -122,20 +115,26 @@ function go_run() {
                                     break;
                             }
                             // Reading the file
-                            fs_1.default.readFile(filePath, function (err, content) {
-                                if (err) {
-                                    res.writeHead(404, { "Content-Type": "text/plain" });
-                                    res.end("404 Not Found");
-                                    console.log('static 404 Not Found', err.message);
-                                    return;
-                                }
+                            const content = fs_1.default.readFileSync(filePath);
+                            if (content) {
                                 res.writeHead(200, { "Content-Type": contentType });
                                 res.end(content);
                                 //console.log('static --------------OK');
                                 return;
-                            });
-                        });
-                        return;
+                            }
+                            else {
+                                res.writeHead(404, { "Content-Type": "text/plain" });
+                                res.end("404 Not Found");
+                                console.log('static 404 Not Found', filePath);
+                                return;
+                            }
+                        }
+                        catch (_err) {
+                            res.writeHead(404, { "Content-Type": "text/plain" });
+                            res.end("404 Not Found");
+                            console.log('static2 404 Not Found', _err.message);
+                            return;
+                        }
                     }
                 }
                 const cookie_str = req.headers.cookie || '';
@@ -170,6 +169,7 @@ function go_run() {
                 srvRoute.set('/product', './pages/product');
                 srvRoute.set('/product_edit', './pages/product_edit');
                 srvRoute.set('/init', './pages/init');
+                srvRoute.set('/product_view', './pages/product_view');
                 let a_page = "";
                 const defaultPage = yield Promise.resolve().then(() => __importStar(require("./pages/_default.js")));
                 a_page = yield defaultPage.getPage(param_obj);

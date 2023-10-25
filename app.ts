@@ -78,7 +78,7 @@ function go_run() {
 
       console.log("param_obj: ", JSON.stringify(param_obj));
 
-      // static resourse
+      // static resourse/file
       if (param_obj.method === 'GET') {
 
         const filePath = path.join(__dirname, param_obj.pathname).split("%20").join(" ");
@@ -87,16 +87,7 @@ function go_run() {
         if (ext) {
           //console.log('Static resourse: ', __dirname, filePath, ext);
 
-          // Checking if the path exists
-          fs.exists(filePath, function (exists) {
-
-            // if (!exists) {
-            //   res.writeHead(404, { "Content-Type": "text/plain" });
-            //   res.end("404 Not Found");
-            //   console.log('static --------------404');
-            //   return;
-            // }
-
+          try {
             // Setting default Content-Type
             let contentType = "text/plain";
 
@@ -109,26 +100,37 @@ function go_run() {
             }
 
             // Reading the file
-            fs.readFile(filePath,
-              function (err, content) {
-                if (err) {
-                  res.writeHead(404, { "Content-Type": "text/plain" });
-                  res.end("404 Not Found");
-                  console.log('static 404 Not Found', err.message);
-                  return;
-                }
-                res.writeHead(200, { "Content-Type": contentType });
-                res.end(content);
-                //console.log('static --------------OK');
-                return;
-              });
-          });
-          return;
+            const content = fs.readFileSync(filePath);
+            if (content) {
+              res.writeHead(200, { "Content-Type": contentType });
+              res.end(content);
+              //console.log('static --------------OK');
+              return;
+
+            } else {
+
+              res.writeHead(404, { "Content-Type": "text/plain" });
+              res.end("404 Not Found");
+              console.log('static 404 Not Found', filePath);
+              return;
+
+            }
+
+          }
+
+          catch (_err) {
+            res.writeHead(404, { "Content-Type": "text/plain" });
+            res.end("404 Not Found");
+            console.log('static2 404 Not Found', (_err as Error).message);
+            return;
+
+          }
         }
       }
 
+
       const cookie_str = req.headers.cookie || '';
-      param_obj.user =  mClass.GetUser_FromCookies(cookie_str);
+      param_obj.user = mClass.GetUser_FromCookies(cookie_str);
 
 
       if (param_obj.pathname.includes('/api/v1')) {
@@ -171,10 +173,11 @@ function go_run() {
       srvRoute.set('/product', './pages/product');
       srvRoute.set('/product_edit', './pages/product_edit');
       srvRoute.set('/init', './pages/init');
+      srvRoute.set('/product_view', './pages/product_view');
 
       let a_page = "";
       const defaultPage = await import("./pages/_default.js");
-      a_page = await defaultPage.getPage( param_obj );
+      a_page = await defaultPage.getPage(param_obj);
 
       let a_body = "";
       if (srvRoute.has(param_obj.pathname)) {

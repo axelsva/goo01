@@ -1,6 +1,8 @@
 
 import crypto from 'crypto';
 import cookie = require("cookie");
+import fs from 'fs';
+import path from 'path';
 
 
 
@@ -35,6 +37,28 @@ export function get_html_a(text: string, href: string) {
 
 export function get_html_a_product(a_product: Product) {
     return `<a href="/product_edit?id=${a_product.ID}">ID: ${a_product.ID} </a> Name: ${a_product.name}`;
+}
+
+export function get_html_product_img(a_id: number) {
+
+    const a_num = a_id as number || 0;
+    const fp = `/upload/${a_num}.jpg`;
+
+    let stub = "/upload/stub.jpg";
+
+    const filePath = path.join(__dirname, '..'+fp);
+    console.log("fp", filePath);
+
+    try {
+
+        fs.openSync(filePath, 'r');
+        stub = fp;
+    }
+    catch (_e) {}
+    
+    
+    console.log("fp", stub);
+    return "" + stub;
 }
 
 
