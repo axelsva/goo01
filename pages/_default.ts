@@ -9,6 +9,26 @@ export function getPage(param_obj: mClass.RouteParam) {
         <link rel="stylesheet" type="text/css" href="/assets/css/style.css">
         <script src="/assets/mscript.js"></script>
         <meta name="viewport" content="width=device-width, user-scalable=yes">
+        <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+        <script src="https://api-maps.yandex.ru/2.1/?lang=ru_RU&apikey=c37dd155-c946-4cbe-9c3d-4894dd90dc2c" type="text/javascript"></script>
+        <script src="/assets/event_reverse_geocode.js" type="text/javascript"></script>
+        <style type="text/css">
+            html, body {
+                width: 100%;
+                height: 95%;
+                margin: 0;
+                padding: 0;
+                font-family: Arial;
+                font-size: 14px;
+            }
+            #map {
+                width: 100%;
+                height: 95%;
+            }
+            .header {
+                padding: 5px;
+            }
+        </style>
     </head>
     <body>
         <div class="glMain">
@@ -73,11 +93,20 @@ export function getPage(param_obj: mClass.RouteParam) {
         }
 
         result += `
-            ${mClass.get_html_a('Home', '/')} </br>
-            ${mClass.get_html_a('About', '/about')} </br>
-            ${mClass.get_html_a('Products', '/product')} </br>
-            <hr>
-            ${mClass.get_html_a('Init', '/init')} </br>
+            <br>
+            <div id="div_links">
+                <hr>
+                <div id="Cart">
+                    ${mClass.get_html_a('Cart', '/cart')} </br>
+                    <div id="CartStatus"> </div>
+                </div>
+                 <hr>
+                ${mClass.get_html_a('Home', '/')} </br>
+                ${mClass.get_html_a('About', '/about')} </br>
+                ${mClass.get_html_a('Products', '/product')} </br>
+                <hr>
+                ${mClass.get_html_a('Init', '/INIT')} </br>
+            </div>
         `;
 
         return result;

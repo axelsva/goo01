@@ -32,6 +32,7 @@
     margin: 10px;
     border-radius: 5px;
     padding: 2px;
+    font-style: oblique;
 }
 
 #glTop2 {
@@ -94,11 +95,25 @@
 
 .productitemcaption {
     overflow: hidden;
+    margin: 2px;
+    padding: 2px;
+    background-color: #312c4d;
+    color: white;
+}
+
+.cartitemcaption {
+    overflow: hidden;
+    margin: 2px;
+    padding: 2px;
+    background-color: #312c4d;
+    color: white;
 }
 
 .productitem {
     overflow: hidden;
     margin: 2px;
+    padding: 2px;
+    background-color: #eeeeee;
 }
 
 .p_id {
@@ -131,14 +146,17 @@
 
 .p_img {
     float: left;
+    width: 120px;
+    padding: 5px;
 }
 
-
-.productitem img {
+.p_img img{
     width: 100px;
     height: 100px;
     object-fit: cover;
 }
+
+
 
 input[name="price"] {
     width: 70px;

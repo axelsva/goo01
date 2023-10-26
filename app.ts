@@ -6,12 +6,7 @@ import path from 'path';
 import url from 'url';
 import qs from 'querystring';
 
-
-
-
-
 import * as mClass from './pages/_clases.js';
-
 
 const gl_user = {} as mClass.TUser;
 
@@ -174,6 +169,7 @@ function go_run() {
       srvRoute.set('/product_edit', './pages/product_edit');
       srvRoute.set('/init', './pages/init');
       srvRoute.set('/product_view', './pages/product_view');
+      srvRoute.set('/cart', './pages/cart');
 
       let a_page = "";
       const defaultPage = await import("./pages/_default.js");

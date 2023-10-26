@@ -23,7 +23,7 @@ export async function db_CreateDataBase() {
 
       db.run(`CREATE TABLE IF NOT EXISTS product ( 
       ID INTEGER PRIMARY KEY AUTOINCREMENT,
-      name   VARCHAR(50) NOT NULL,
+      name VARCHAR(50) NOT NULL,
       articul   VARCHAR(20) NOT NULL,
       description  VARCHAR(50) NOT NULL,
       price real NOT NULL );
@@ -50,7 +50,8 @@ export async function db_CreateDataBase() {
           ID INTEGER PRIMARY KEY AUTOINCREMENT,
           id_user INTEGER NOT NULL,
           id_product INTEGER NOT NULL,
-          sum INTEGER NOT NULL);
+          sum INTEGER NOT NULL,
+          name VARCHAR(50) NOT NULL );
           `,
         (err) => {
           if (err) {
@@ -104,6 +105,7 @@ export async function db_ProductAdd(product: mClass.Product) {
   })
 }
 
+
 export async function db_ProductList(a_name: string, a_price: number) {
 
   return new Promise(function (resolve, reject) {
@@ -124,33 +126,24 @@ export async function db_ProductList(a_name: string, a_price: number) {
 
         (err, rows) => {
           if (err) {
-
             reject(err);
-
           } else {
-
             resolve(rows);
-
           }
         });
     }
 
     else {
 
-      console.log(a_name,a_price);
-
+      //console.log(a_name, a_price);
       query_str = 'select * from product where name = ? and price  >= ? ';
 
       db.all(query_str, [a_name, a_price],
         (err, rows) => {
           if (err) {
-
             reject(err);
-
           } else {
-
             resolve(rows);
-
           }
         });
     }
@@ -277,7 +270,7 @@ export async function db_UserGet(a_name: string) {
   })
 }
 
-export async function db_AddToCart(id: number, idp: number, sum: number) {
+export async function db_AddToCart(id: number, idp: number, sum: number, name: string) {
 
   return new Promise(function (resolve, reject) {
 
@@ -288,11 +281,8 @@ export async function db_AddToCart(id: number, idp: number, sum: number) {
         }
       });
 
-    db.run('INSERT INTO carts(id_user, id_product, sum)  VALUES( ?,?,?)',
-      [id,
-        idp,
-        sum
-      ],
+    db.run('INSERT INTO carts(id_user, id_product, sum, name)  VALUES( ?,?,?, ?)',
+      [id, idp, sum, name],
 
       (err) => {
         if (err) {
@@ -305,3 +295,35 @@ export async function db_AddToCart(id: number, idp: number, sum: number) {
     db.close();
   })
 }
+
+
+
+export async function db_CartList(user_id: number) {
+
+  return new Promise(function (resolve, reject) {
+
+    const db = new sqlite3.Database(dbpath, sqlite3.OPEN_READWRITE,
+      (err) => {
+        if (err) {
+          reject(err);
+        }
+      });
+
+
+    const query_str = 'select * from carts where id_user = ?';
+
+    db.all(query_str, [user_id],
+      (err, rows) => {
+        if (err) {
+          reject(err);
+        } else {
+          resolve(rows);
+        }
+      });
+
+    db.close();
+  });
+
+}
+
+

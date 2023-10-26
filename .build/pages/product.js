@@ -69,11 +69,12 @@ function get_body(param_obj) {
             result += '<div class="productlist">';
             result += `<div class="productitemcaption">
                 <div class="p_id">ID</div>
+                <div class="p_img">IMG</div>
                 <div class="p_name">NAME</div>
                 <div class="p_articul">ARTIKUL</div>
                 <div class="p_price">PRICE</div>
                 </div>
-                </hr>`;
+                `;
             rows.forEach((_row) => {
                 const row = _row;
                 const img_src = mClass.get_html_product_img(row.ID);
@@ -83,10 +84,9 @@ function get_body(param_obj) {
                 result += `<div class="p_img"><img src="${img_src}" alt ="${row.name}"></div>`;
                 result += `<div class="p_name">${mClass.get_html_a(row.name, "/product_view?id=" + row.ID)}</div>`;
                 result += `<div class="p_articul"> ${row.articul}</div>`;
-                result += `<div class="p_price"> ${row.price}</div>`;
-                result += `<input id="btn_addtocart" type="button" name="${row.ID}" onclick="Add_ToCart(${row.ID},${row.price})"   value="В Коризну">`;
+                result += `<div class="p_price"> ${row.price} ${mClass.app_cfg.get('RUR')}</div>`;
+                result += `<input id="btn_addtocart" type="button" name="${row.ID}" onclick="Add_ToCart(${row.ID},${row.price}, '${row.name}')"   value="В Корзину">`;
                 result += '</div>';
-                result += `</hr>`;
                 //}
             });
             result += '</div>';

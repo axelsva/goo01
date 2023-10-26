@@ -4,6 +4,12 @@ import cookie = require("cookie");
 import fs from 'fs';
 import path from 'path';
 
+export const app_cfg = new Map();
+app_cfg.set('site_name', 'Goo Goo Goo');
+app_cfg.set('site_tel', 'Goo Goo Goo');
+app_cfg.set('RUR', 'руб');
+app_cfg.set('cookie_user_max_age', 1200);   //20 min
+
 
 
 export interface RouteParam {
@@ -30,6 +36,13 @@ export interface TUser {
     hash: string
 }
 
+export interface CartItem {
+    ID: number;
+    id_user: number,
+    id_product: number,
+    sum: number,
+    name: string
+}
 
 export function get_html_a(text: string, href: string) {
     return `<a href="${href}">${text}</a>`;
@@ -47,21 +60,30 @@ export function get_html_product_img(a_id: number) {
     let stub = "/upload/stub.jpg";
 
     const filePath = path.join(__dirname, '..'+fp);
-    console.log("fp", filePath);
 
     try {
-
         fs.openSync(filePath, 'r');
         stub = fp;
     }
     catch (_e) {}
     
-    
-    console.log("fp", stub);
     return "" + stub;
 }
 
 
+export function getIDUserRegistr(user_obj: object) {
+    if ('id' in user_obj) {
+        return (user_obj.id as number) || 0;
+    }
+    return 0;
+}
+
+export function getNameUserRegistr(user_obj: object) {
+    if ('name' in user_obj) {
+        return (user_obj.name as string) || '';
+    }
+    return '';
+}
 
 export function NewProductFromArray(a_product: object) {
     const product = {} as Product;
@@ -131,7 +153,7 @@ export function GetCookies_FromUser(a_id: number, a_name: string) {
 
     const user_obj = { "id": a_id, "name": a_name };
     const enc_text = new TextEncoder().encode(JSON.stringify(user_obj));
-    return cookie.serialize('s_uid', enc_text.toString(), { maxAge: 600 });
+    return cookie.serialize('s_uid', enc_text.toString(), { maxAge: app_cfg.get('cookie_user_max_age') });
 
 }
 

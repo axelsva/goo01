@@ -170,6 +170,7 @@ function go_run() {
                 srvRoute.set('/product_edit', './pages/product_edit');
                 srvRoute.set('/init', './pages/init');
                 srvRoute.set('/product_view', './pages/product_view');
+                srvRoute.set('/cart', './pages/cart');
                 let a_page = "";
                 const defaultPage = yield Promise.resolve().then(() => __importStar(require("./pages/_default.js")));
                 a_page = yield defaultPage.getPage(param_obj);

@@ -96,10 +96,10 @@ function User_LogOut(event) {
 
 }
 
-function Add_ToCart(a_ID, a_sum) {
+function Add_ToCart(a_ID, a_sum, a_name) {
     console.log("Add_ToCart - ", a_ID);
 
-    const q_str = `idp=${a_ID}&sum=${a_sum}`;
+    const q_str = `idp=${a_ID}&sum=${a_sum}&name=${a_name}`;
 
     const opt = {
         method: 'POST',
@@ -114,7 +114,7 @@ function Add_ToCart(a_ID, a_sum) {
         .then((data) => {
             console.log(data);
 
-            //const div_status = document.querySelector("#reg_user_status");
+            const div_status = document.querySelector("#reg_user_status");
 
             if (data.result === "ok") {
 
