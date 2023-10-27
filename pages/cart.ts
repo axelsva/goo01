@@ -64,11 +64,11 @@ export async function get_body(param_obj: mClass.RouteParam) {
                 result += `
                 <div id="order">
                     <div id="div_form_order">
-                    <form name="form_order" id="form_order" action="/product_edit" method="POST">
+                    <form name="form_order" id="form_order" action="/cart" method="POST">
                         Please enter: <Br>
                         email:<input type="text" name="email" value=""><Br>
                         tel:<input type="text" name="tel" value=""><Br>
-                        address:<input type="text" name="address" value=""><Br>
+                        address:<input id='inputaddress'type="text" name="adress" value=""><Br>
                         <br>
                         <button value=cmd_order type="submit" name="btn" formaction="/cart">Оформить заказ</button>
                     </form>

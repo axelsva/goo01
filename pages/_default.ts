@@ -11,22 +11,14 @@ export function getPage(param_obj: mClass.RouteParam) {
         <meta name="viewport" content="width=device-width, user-scalable=yes">
         <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
         <script src="https://api-maps.yandex.ru/2.1/?lang=ru_RU&apikey=c37dd155-c946-4cbe-9c3d-4894dd90dc2c" type="text/javascript"></script>
-        <script src="/assets/event_reverse_geocode.js" type="text/javascript"></script>
-        <style type="text/css">
-            html, body {
+
+        <script src="/assets/deliveryCalculator.js" type="text/javascript"></script>
+        <style>
+            html, body, #map {
                 width: 100%;
-                height: 95%;
-                margin: 0;
+                height: 100%;
                 padding: 0;
-                font-family: Arial;
-                font-size: 14px;
-            }
-            #map {
-                width: 100%;
-                height: 95%;
-            }
-            .header {
-                padding: 5px;
+                margin: 0;
             }
         </style>
     </head>
