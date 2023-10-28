@@ -3,7 +3,7 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.NewUserFromArray = exports.GetUser_FromCookies = exports.GetCookies_FromUser = exports.GetCookies_NULLUser = exports.validPassword = exports.setPassword = exports.ProductValidate = exports.NewProductFromArray = exports.getNameUserRegistr = exports.getIDUserRegistr = exports.get_html_product_img = exports.get_html_a_product = exports.get_html_a = exports.app_cfg = void 0;
+exports.send_order = exports.validate_param_order = exports.NewUserFromArray = exports.GetUser_FromCookies = exports.GetCookies_FromUser = exports.GetCookies_NULLUser = exports.validPassword = exports.setPassword = exports.ProductValidate = exports.NewProductFromArray = exports.getNameUserRegistr = exports.get_html_product_img = exports.getIDUserRegistr = exports.get_html_a_product = exports.get_html_a = exports.app_cfg = void 0;
 const crypto_1 = __importDefault(require("crypto"));
 const cookie = require("cookie");
 const fs_1 = __importDefault(require("fs"));
@@ -11,29 +11,17 @@ const path_1 = __importDefault(require("path"));
 exports.app_cfg = new Map();
 exports.app_cfg.set('site_name', 'Goo Goo Goo');
 exports.app_cfg.set('site_tel', 'Goo Goo Goo');
-exports.app_cfg.set('RUR', 'руб');
+exports.app_cfg.set('RUR', "руб");
 exports.app_cfg.set('cookie_user_max_age', 1200); //20 min
 function get_html_a(text, href) {
-    return `<a href="${href}">${text}</a>`;
+    const str = `<a href="${href}">${text}</a>`;
+    return str;
 }
 exports.get_html_a = get_html_a;
 function get_html_a_product(a_product) {
     return `<a href="/product_edit?id=${a_product.ID}">ID: ${a_product.ID} </a> Name: ${a_product.name}`;
 }
 exports.get_html_a_product = get_html_a_product;
-function get_html_product_img(a_id) {
-    const a_num = a_id || 0;
-    const fp = `/upload/${a_num}.jpg`;
-    let stub = "/upload/stub.jpg";
-    const filePath = path_1.default.join(__dirname, '..' + fp);
-    try {
-        fs_1.default.openSync(filePath, 'r');
-        stub = fp;
-    }
-    catch (_e) { }
-    return "" + stub;
-}
-exports.get_html_product_img = get_html_product_img;
 function getIDUserRegistr(user_obj) {
     if ('id' in user_obj) {
         return user_obj.id || 0;
@@ -41,6 +29,23 @@ function getIDUserRegistr(user_obj) {
     return 0;
 }
 exports.getIDUserRegistr = getIDUserRegistr;
+function get_html_product_img(a_id) {
+    const stub = "/upload/stub.jpg";
+    let result = "" + stub;
+    const a_num = a_id || 0;
+    const fp = `/upload/${a_num}.jpg`;
+    const filePath = path_1.default.join(__dirname, '..' + fp);
+    try {
+        fs_1.default.openSync(filePath, 'r');
+        result = fp;
+    }
+    catch (_a) {
+        //console.log("get_html_product_img");
+    }
+    ;
+    return result;
+}
+exports.get_html_product_img = get_html_product_img;
 function getNameUserRegistr(user_obj) {
     if ('name' in user_obj) {
         return user_obj.name || '';
@@ -109,7 +114,7 @@ function GetUser_FromCookies(a_cookies) {
     const cookies = cookie.parse(a_cookies);
     if (cookies && 's_uid' in cookies) {
         try {
-            const str = cookies.s_uid;
+            const str = cookies['s_uid'];
             const str1 = str.split(',');
             const uArr = Uint8Array.from(str1, (x) => { return parseInt(x, 10); });
             const dec_obj = JSON.parse(new TextDecoder("utf-8").decode(uArr));
@@ -141,3 +146,46 @@ function NewUserFromArray(a_user) {
     return User;
 }
 exports.NewUserFromArray = NewUserFromArray;
+function validate_param_order(param_obj) {
+    //{"email":"test@ya.ru","tel":"","comment":"","address":"Киров, улица Горького, 18","
+    //  d_sum":"500","btn":"cmd_order"}}
+    const result = param_obj || {};
+    if (!result.email) {
+        throw new Error('Error: order email is empty');
+    }
+    if (!result.tel) {
+        throw new Error('Error: order tel is empty');
+    }
+    if (!result.address) {
+        throw new Error('Error: order address is empty');
+    }
+    return result;
+}
+exports.validate_param_order = validate_param_order;
+function send_order(order_param, rows) {
+    let s_sum = 0;
+    let s_item = '';
+    rows.forEach((_row, ii) => {
+        const row = _row;
+        s_sum += row.sum;
+        s_item += `\nITEM: ${ii} - Name: ${row.name}, ProdID: ${row.id_product}, Sum: ${row.sum} ${exports.app_cfg.get('RUR')}`;
+    });
+    const s_date = `${new Date(Date.now()).toLocaleString()}`;
+    let result = `
+        Date:   ${s_date}
+        User: ${order_param.user}
+        Tel:  ${order_param.tel}
+        Email:  ${order_param.email}
+        Comment:  ${order_param.comment}
+        Address:  ${order_param.address}
+        Order Sum:  ${s_sum} ${exports.app_cfg.get('RUR')}
+        Delivery Sum:  ${order_param.d_sum} ${exports.app_cfg.get('RUR')}
+    `;
+    result += s_item;
+    console.log(result);
+    const fp = `/upload/${order_param.user}-${Date.now()}.txt`;
+    const filePath = path_1.default.join(__dirname, '..' + fp);
+    fs_1.default.writeFileSync(filePath, result, 'utf8');
+    return fp;
+}
+exports.send_order = send_order;

@@ -7,7 +7,7 @@ import path from 'path';
 export const app_cfg = new Map();
 app_cfg.set('site_name', 'Goo Goo Goo');
 app_cfg.set('site_tel', 'Goo Goo Goo');
-app_cfg.set('RUR', 'руб');
+app_cfg.set('RUR', "руб");
 app_cfg.set('cookie_user_max_age', 1200);   //20 min
 
 
@@ -44,32 +44,29 @@ export interface CartItem {
     name: string
 }
 
+//{"email":"test@ya.ru","tel":"","comment":"","address":"Киров, улица Горького, 18","d_sum":"500","btn":"cmd_order"}}
+
+export interface ParamOrder {
+    user: string;
+    email: string,
+    tel: string,
+    comment: string,
+    address: number,
+    order_summ: number,
+    d_sum: number
+}
+
+
+
+
 export function get_html_a(text: string, href: string) {
-    return `<a href="${href}">${text}</a>`;
+    const str = `<a href="${href}">${text}</a>`;
+    return str;
 }
 
 export function get_html_a_product(a_product: Product) {
     return `<a href="/product_edit?id=${a_product.ID}">ID: ${a_product.ID} </a> Name: ${a_product.name}`;
 }
-
-export function get_html_product_img(a_id: number) {
-
-    const a_num = a_id as number || 0;
-    const fp = `/upload/${a_num}.jpg`;
-
-    let stub = "/upload/stub.jpg";
-
-    const filePath = path.join(__dirname, '..'+fp);
-
-    try {
-        fs.openSync(filePath, 'r');
-        stub = fp;
-    }
-    catch (_e) {}
-    
-    return "" + stub;
-}
-
 
 export function getIDUserRegistr(user_obj: object) {
     if ('id' in user_obj) {
@@ -77,6 +74,27 @@ export function getIDUserRegistr(user_obj: object) {
     }
     return 0;
 }
+
+
+export function get_html_product_img(a_id: number) {
+    const stub = "/upload/stub.jpg";
+    let result = "" + stub;
+
+    const a_num = a_id as number || 0;
+    const fp = `/upload/${a_num}.jpg`;
+    const filePath = path.join(__dirname, '..' + fp);
+
+    try {
+        fs.openSync(filePath, 'r');
+        result = fp;
+    }
+    catch {
+        //console.log("get_html_product_img");
+    };
+
+    return result;
+}
+
 
 export function getNameUserRegistr(user_obj: object) {
     if ('name' in user_obj) {
@@ -165,7 +183,7 @@ export function GetUser_FromCookies(a_cookies: string) {
     if (cookies && 's_uid' in cookies) {
 
         try {
-            const str = cookies.s_uid;
+            const str = cookies['s_uid'];
             const str1 = str.split(',');
             const uArr = Uint8Array.from(str1, (x) => { return parseInt(x, 10); });
             const dec_obj = JSON.parse(new TextDecoder("utf-8").decode(uArr));
@@ -201,5 +219,64 @@ export function NewUserFromArray(a_user: object) {
         throw new Error('Error: wrong user password');
 
     return User;
+}
+
+export function validate_param_order(param_obj: object) {
+
+    //{"email":"test@ya.ru","tel":"","comment":"","address":"Киров, улица Горького, 18","
+    //  d_sum":"500","btn":"cmd_order"}}
+    const result = param_obj as ParamOrder || {};
+
+    if (!result.email) {
+        throw new Error('Error: order email is empty');
+    }
+
+    if (!result.tel) {
+        throw new Error('Error: order tel is empty');
+    }
+
+    if (!result.address) {
+        throw new Error('Error: order address is empty');
+    }
+
+    return result;
+}
+
+export function send_order(order_param: ParamOrder, rows: []) {
+
+    let s_sum = 0;
+    let s_item = '';
+
+    rows.forEach((_row, ii) => {
+        const row = _row as CartItem;
+        s_sum += row.sum
+        s_item += `\nITEM: ${ii} - Name: ${row.name}, ProdID: ${row.id_product}, Sum: ${row.sum} ${app_cfg.get('RUR')}`;
+
+    });
+
+    const s_date = `${new Date(Date.now()).toLocaleString()}`;
+
+    let result = `
+        Date:   ${s_date}
+        User: ${order_param.user}
+        Tel:  ${order_param.tel}
+        Email:  ${order_param.email}
+        Comment:  ${order_param.comment}
+        Address:  ${order_param.address}
+        Order Sum:  ${s_sum} ${app_cfg.get('RUR')}
+        Delivery Sum:  ${order_param.d_sum} ${app_cfg.get('RUR')}
+    `;
+
+    result += s_item;
+
+    console.log(result);
+
+
+    const fp = `/upload/${order_param.user}-${Date.now()}.txt`;
+    const filePath = path.join(__dirname, '..' + fp);
+
+    fs.writeFileSync(filePath, result, 'utf8');
+
+    return fp;
 }
 

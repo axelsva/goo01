@@ -8,8 +8,6 @@ import qs from 'querystring';
 
 import * as mClass from './pages/_clases.js';
 
-const gl_user = {} as mClass.TUser;
-
 
 function go_run() {
 

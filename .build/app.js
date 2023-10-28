@@ -41,7 +41,6 @@ const path_1 = __importDefault(require("path"));
 const url_1 = __importDefault(require("url"));
 const querystring_1 = __importDefault(require("querystring"));
 const mClass = __importStar(require("./pages/_clases.js"));
-const gl_user = {};
 function go_run() {
     const options = {
         key: fs_1.default.readFileSync('./key/key.pem'),

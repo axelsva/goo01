@@ -76,7 +76,7 @@ export function getPage(param_obj: mClass.RouteParam) {
                     <label>User:<input type="text" name="name" value=""></label><Br>
                     <label>Psw:<input type="text" name="psw" value=""></label><Br>
                     <br>
-                    <input id="btn_login" type="button" onclick="User_Login()" name="btn_enter"  value="Enter">
+                    <input id="btn_login" type="submit" onclick="User_Login()" name="btn_enter"  value="Enter">
                     <input id="btn_reg" type="button" name="btn_reg"  value="Register">
                 </form>
                 <div id="reg_user_status"></div>
@@ -97,7 +97,7 @@ export function getPage(param_obj: mClass.RouteParam) {
                 ${mClass.get_html_a('About', '/about')} </br>
                 ${mClass.get_html_a('Products', '/product')} </br>
                 <hr>
-                ${mClass.get_html_a('Init', '/INIT')} </br>
+                ${mClass.get_html_a('Init', '/init')} </br>
             </div>
         `;
 

@@ -1,17 +1,65 @@
 import * as mClass from './_clases.js';
 import * as mDB from './db_module.js';
 
+//  GET ../cart    :get carts if User authorized
+//  GET ../cart?btn=cmd_del&id=1    :del product from cart
+//  GET ../cart?btn=cmd_order....     :get order
+//      "arg":{"email":"test@ya.ru","tel":"","comment":"","adress":"Киров, улица Горького, 18","d_sum":"500","btn":"cmd_order"}
+
 export async function get_body(param_obj: mClass.RouteParam) {
 
     let result = `
         <h1>Cart page</h1>
     `;
 
+    let order_result = '';
+
     if (param_obj && ('user' in param_obj)) {
 
         const user_id = mClass.getIDUserRegistr(param_obj.user);
         if (!user_id) {
             throw new Error("Error: Please Login");
+        }
+
+        if ('arg' in param_obj && param_obj.arg && "btn" in param_obj.arg) {
+
+            if (param_obj.arg.btn === 'cmd_order') {
+
+                try {
+
+                    const order_param = mClass.validate_param_order(param_obj.arg);
+                    order_param.user = mClass.getNameUserRegistr(param_obj.user);
+
+                    await mDB.db_CartList(user_id)
+                        .then(async (_rows) => {
+
+                            const rows = _rows as [];
+                            const fp = await mClass.send_order(order_param, rows);
+                            order_result = `
+<script>
+var link = document.createElement('a');
+link.setAttribute('href','${fp}');
+link.setAttribute('download','download');
+onload=link.click();
+</script>
+                            `;
+                            //await mDB.db_CartClear(user_id);
+                        })
+                        .catch(
+                            (err) => { order_result = (err as Error).message; }
+                        );
+
+                } catch (err) {
+                    order_result = (err as Error).message;
+                }
+            }
+
+
+
+            if (param_obj.arg.btn === 'cmd_del' && "id" in param_obj.arg) {
+                const a_id = param_obj.arg.id as number || 0;
+                await mDB.db_CartDelProduct(a_id);
+            }
         }
 
         await mDB.db_CartList(user_id)
@@ -43,8 +91,8 @@ export async function get_body(param_obj: mClass.RouteParam) {
                     result += `<div class="p_id"> ${row.id_product} </div>`;
                     result += `<div class="p_img"><img src="${img_src}" alt ="${row.name}"></div>`;
                     result += `<div class="p_name">${mClass.get_html_a(row.name, "/product_view?id=" + row.id_product)}</div>`;
-                    //result += `<div class="p_articul"> ${row.articul}</div>`;
                     result += `<div class="p_price"> ${row.sum} ${mClass.app_cfg.get('RUR')}</div>`;
+                    result += `<div class="p_del"> ${mClass.get_html_a("DEL", "/cart?btn=cmd_del&id=" + row.ID)}</div>`;
                     result += '</div>';
 
                     ssum += row.sum;
@@ -62,20 +110,28 @@ export async function get_body(param_obj: mClass.RouteParam) {
                 result += '</div>'  //'<div class="cartlist">'
 
                 result += `
+                <div id="order_result">${order_result}</div>
+                `;
+
+                result += `
                 <div id="order">
                     <div id="div_form_order">
                     <form name="form_order" id="form_order" action="/cart" method="POST">
                         Please enter: <Br>
-                        email:<input type="text" name="email" value=""><Br>
-                        tel:<input type="text" name="tel" value=""><Br>
-                        address:<input id='inputaddress'type="text" name="adress" value=""><Br>
+                        email:<input type="email" name="email" value="test@ya.ru"><Br>
+                        tel:<input type="tel" name="tel" value="7777777"><Br>
+                        comment:<input type="text" name="comment" value=""><Br>
+                        <input id='inputaddress'type="text" name="address" value="" hidden>
+                        <input id='d_sum' type="number" name="d_sum" value="" hidden>
+                        address: <span id="div_inputaddress">Выберите адрес доставки на карте</span><br>
+                        delivery sum: <span id="div_d_sum"></span><br>
                         <br>
                         <button value=cmd_order type="submit" name="btn" formaction="/cart">Оформить заказ</button>
                     </form>
                     </div>
 
                     <div id="div_form_map">
-                        <p class="header">Кликните по карте, чтобы узнать адрес</p>
+                        <p class="header">Кликните по карте, чтобы задать адрес доставки</p>
                         <div id="map"></div>
                     </div>
 
@@ -91,6 +147,12 @@ export async function get_body(param_obj: mClass.RouteParam) {
     } else {
         throw new Error("Error: Please Login");
     }
+
+    result += `
+<script>
+window.scrollTo(0, 0)
+</script>
+`;
 
 
     return result;

@@ -12,7 +12,7 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.db_CartList = exports.db_AddToCart = exports.db_UserGet = exports.db_UserAdd = exports.db_ProductUpdate = exports.db_ProductGet = exports.db_ProductList = exports.db_ProductAdd = exports.db_CreateDataBase = void 0;
+exports.db_CartDelProduct = exports.db_CartList = exports.db_AddToCart = exports.db_UserGet = exports.db_UserAdd = exports.db_ProductUpdate = exports.db_ProductGet = exports.db_ProductList = exports.db_ProductAdd = exports.db_CreateDataBase = void 0;
 //import fs from "fs";
 const sqlite3_1 = __importDefault(require("sqlite3"));
 const path_1 = __importDefault(require("path"));
@@ -265,3 +265,25 @@ function db_CartList(user_id) {
     });
 }
 exports.db_CartList = db_CartList;
+function db_CartDelProduct(a_id) {
+    return __awaiter(this, void 0, void 0, function* () {
+        return new Promise(function (resolve, reject) {
+            const db = new sqlite3_1.default.Database(dbpath, sqlite3_1.default.OPEN_READWRITE, (err) => {
+                if (err) {
+                    reject(err);
+                }
+            });
+            const query_str = 'DELETE FROM carts WHERE id = ?';
+            db.run(query_str, [a_id], (err) => {
+                if (err) {
+                    reject(err);
+                }
+                else {
+                    resolve(1);
+                }
+            });
+            db.close();
+        });
+    });
+}
+exports.db_CartDelProduct = db_CartDelProduct;

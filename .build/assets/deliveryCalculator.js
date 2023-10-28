@@ -64,12 +64,10 @@ function init() {
                 route.options.set('routeBalloonContentLayout', balloonContentLayout);
                 // Откроем балун.
                 activeRoute.balloon.open();
-                console.log(route.properties._data.waypoints[1].address)
 
-                let input_adress = document.querySelector("#inputaddress");
-                if (input_adress) {
-                    input_adress.value = route.properties._data.waypoints[1].address;
-                }
+                set_field_form(route.properties._data.waypoints[1].address, price);
+                
+
 
             }
         });
@@ -80,6 +78,31 @@ function init() {
         let calc = Math.max(routeLength * DELIVERY_TARIFF, MINIMUM_COST);
         console.log(calc);
         return calc;
+
+    }
+
+    function set_field_form(a_address, a_price) {
+
+        let el = document.querySelector("#inputaddress");
+        if (el) {
+            el.value = a_address;
+        }
+        
+        el = document.querySelector("#div_inputaddress");
+        if (el) {
+            el.innerHTML = a_address;
+        }
+
+        el = document.querySelector("#d_sum");
+        if (el) {
+            el.value = a_price;
+        }
+
+        el = document.querySelector("#div_d_sum");
+        if (el) {
+            el.innerHTML = a_price;
+        }
+
 
     }
 }

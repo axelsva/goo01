@@ -327,3 +327,31 @@ export async function db_CartList(user_id: number) {
 }
 
 
+
+export async function db_CartDelProduct(a_id: number) {
+
+  return new Promise(function (resolve, reject) {
+
+    const db = new sqlite3.Database(dbpath, sqlite3.OPEN_READWRITE,
+      (err) => {
+        if (err) {
+          reject(err);
+        }
+      });
+
+
+    const query_str = 'DELETE FROM carts WHERE id = ?';
+
+    db.run(query_str, [a_id],
+      (err) => {
+        if (err) {
+          reject(err);
+        } else {
+          resolve(1);
+        }
+      });
+
+    db.close();
+  });
+
+}
