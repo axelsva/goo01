@@ -31,10 +31,56 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
         step((generator = generator.apply(thisArg, _arguments || [])).next());
     });
 };
+var __importDefault = (this && this.__importDefault) || function (mod) {
+    return (mod && mod.__esModule) ? mod : { "default": mod };
+};
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.get_body = void 0;
 const mDB = __importStar(require("./db_module.js"));
 const mClass = __importStar(require("./_clases.js"));
+//import QRCode = require("qrcode");
+const qrcode_1 = __importDefault(require("qrcode"));
+function getQR_net() {
+    return __awaiter(this, void 0, void 0, function* () {
+        return new Promise((resolve) => {
+            var os = require('os');
+            let ifaces = os.networkInterfaces();
+            Object.keys(ifaces).forEach(function (ifname) {
+                let alias = 0;
+                ifaces[ifname].forEach(function (iface) {
+                    return __awaiter(this, void 0, void 0, function* () {
+                        if (('family' in iface) && ('internal' in iface) && ('address' in iface)) {
+                            if ('IPv4' !== iface.family || iface.internal !== false) {
+                                // skip over internal (i.e. 127.0.0.1) and non-ipv4 addresses
+                                return;
+                            }
+                            if (alias >= 1) {
+                                // this single interface has multiple ipv4 addresses
+                                //console.log(ifname + ':' + alias, iface.address);
+                            }
+                            else {
+                                // this interface has only one ipv4 adress
+                                //console.log(ifname, iface.address);
+                                // With promises
+                                const _str = `https://${iface.address}:8000`;
+                                yield qrcode_1.default.toDataURL(_str)
+                                    .then((url) => {
+                                    //console.log('qr:', url);
+                                    const _res = `<br><b>${_str} </b> <br> <img src="${url}" /> <br>`;
+                                    resolve(_res);
+                                })
+                                    .catch((err) => {
+                                    console.error(err.message);
+                                });
+                            }
+                            ++alias;
+                        }
+                    });
+                });
+            });
+        });
+    });
+}
 function get_body(param_obj) {
     return __awaiter(this, void 0, void 0, function* () {
         let result = `
@@ -70,6 +116,8 @@ function get_body(param_obj) {
                 }
             }
         }
+        const qr_data = yield getQR_net();
+        result += qr_data;
         return result;
     });
 }

@@ -88,6 +88,12 @@
 
 }
 
+.glBottom {
+    word-wrap: break-word;
+    background-color: #030811;
+    color: rgb(179, 177, 177);
+}
+
 .RoundRectDark {
     margin: 2px;
     padding: 10px;
