@@ -39,16 +39,15 @@ function get_body(param_obj) {
     return __awaiter(this, void 0, void 0, function* () {
         let result_edit = `
         <h1>Product EDIT page</h1>
-        <div id="44">
+        <div id="div_form_edit_product">
         <form name="form_edit_product" id="form_edit_product" action="/product_edit" method="POST">
-            <label><input type="hidden" name="id" value="[gl_product_ID]" >ID: [gl_product_ID] </label><Br>
-            Название:<input type="text" name="name" value="[gl_product_name]"><Br>
-            Артикул:<input type="text" name="articul" value="[gl_product_articul]"><Br>
-            Описание:<input type="text" name="description" value="[gl_product_description]"><Br>
-            Цена:<input type="number" name="price" value="[gl_product_price]"><Br>
+            <label>ID: [gl_product_ID] </label> <Br> <input type="hidden" name="id" value="[gl_product_ID]" ><Br>
+            <label>Название:</label> <Br> <input type="text" name="name" value="[gl_product_name]"><Br>
+            <label>Артикул:</label> <Br> <input type="text" name="articul" value="[gl_product_articul]"><Br>
+            <label>Описание:</label> <Br> <input type="text" name="description" value="[gl_product_description]"><Br>
+            <label>Цена:</label> <Br> <input type="number" name="price" value="[gl_product_price]"><Br>
             <br>
             <button value=cmd_updateproduct  type="submit" name="btn" formaction="/product_edit">Обновить товар</button>
-            <button value=cmd_delproduct  type="submit" name="btn" formaction="/product_edit">Удалить товар</button>
             <button value=""  type="submit" name="btn" formaction="/product">К списку товаров</button>
         </form>
         </div>
@@ -57,10 +56,10 @@ function get_body(param_obj) {
         <h1>Product ADD page</h1>
         <div>
         <form name="form_add_product" id="form_add_product"  action="/product_edit" method="POST">
-            Название:<input type="text" name="name" value=""><Br>
-            Артикул:<input type="text" name="articul" value=""><Br>
-            Описание:<input type="text" name="description" value=""><Br>
-            Цена:<input type="number" name="price" value=""><Br>
+            <label>Название:</label> <Br><input type="text" name="name" value=""><Br>
+            <label>Артикул:</label> <Br><input type="text" name="articul" value=""><Br>
+            <label>Описание:</label> <Br><input type="text" name="description" value=""><Br>
+            <label>Цена:</label> <Br><input type="number" name="price" value=""><Br>
             <br>
             <button value=cmd_addproduct  type="submit" name="btn" formaction="/product_edit">Добавить товар</button>
             <button value=cmd_addproduct  type="reset" name="btn" formaction="/product_edit">Очистить</button>
@@ -93,7 +92,7 @@ function get_body(param_obj) {
                                 throw new Error(err_arr.join(';'));
                             }
                             yield mDB.db_ProductAdd(a_product)
-                                .then(() => { result += 'Success add: ' + mClass.get_html_a_product(a_product); })
+                                .then(() => { result += 'Success add: ' + a_product.name; })
                                 .catch((err) => { result += err.message; });
                         }
                         catch (err) {
@@ -118,7 +117,7 @@ function get_body(param_obj) {
                 }
             }
             else if (param_obj.method === 'GET' && param_obj.arg) {
-                if ('id' in param_obj.arg && param_obj.arg.id !== 'new') {
+                if ('id' in param_obj.arg && param_obj.arg.id > 0) {
                     result = result_edit;
                     yield mDB.db_ProductGet(param_obj.arg.id)
                         .then((_product_db) => {

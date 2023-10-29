@@ -33,19 +33,18 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
 };
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.get_body = void 0;
+const mClass = __importStar(require("../pages/_clases.js"));
 const mDB = __importStar(require("../pages/db_module.js"));
 function get_body(param_obj) {
     return __awaiter(this, void 0, void 0, function* () {
         let result = {};
         if (param_obj && ('method' in param_obj) && ('arg' in param_obj) && 'user' in param_obj) {
+            // add product to cart
             if (param_obj.method === 'POST' && param_obj.arg) {
                 try {
-                    let id_user = 0;
-                    if (param_obj.user && 'id' in param_obj.user) {
-                        id_user = param_obj.user.id || 0;
-                    }
-                    if (!id_user) {
-                        throw new Error('Error: Need login');
+                    const user_id = mClass.getIDUserRegistr(param_obj.user);
+                    if (!user_id) {
+                        throw new Error("Error: Please Login");
                     }
                     if (('idp' in param_obj.arg) && (param_obj.arg.idp) &&
                         ('sum' in param_obj.arg) && (param_obj.arg.sum) &&
@@ -53,7 +52,7 @@ function get_body(param_obj) {
                         const idp = param_obj.arg.idp;
                         const sum = param_obj.arg.sum;
                         const name = param_obj.arg.name;
-                        yield mDB.db_AddToCart(id_user, idp, sum, name)
+                        yield mDB.db_AddToCart(user_id, idp, sum, name)
                             .then((data) => {
                             result = {
                                 "result": "ok",
@@ -64,6 +63,30 @@ function get_body(param_obj) {
                             result = { "result": "error", "message": err.message };
                         });
                     }
+                }
+                catch (err) {
+                    result = { "result": "error", "message": err.message };
+                }
+            }
+            // get status cart - return: number items in cart
+            if (param_obj.method === 'GET' && param_obj.arg) {
+                try {
+                    const user_id = mClass.getIDUserRegistr(param_obj.user);
+                    if (!user_id) {
+                        throw new Error("Error: Please Login");
+                    }
+                    yield mDB.db_CartList(user_id)
+                        .then((_data) => {
+                        const data = _data;
+                        //console.log(data);
+                        result = {
+                            "result": "ok",
+                            "data": data.length
+                        };
+                    })
+                        .catch((err) => {
+                        result = { "result": "error", "message": err.message };
+                    });
                 }
                 catch (err) {
                     result = { "result": "error", "message": err.message };

@@ -34,14 +34,14 @@ function getPage(param_obj) {
         <meta name="viewport" content="width=device-width, user-scalable=yes">
         <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
         <script src="https://api-maps.yandex.ru/2.1/?lang=ru_RU&apikey=c37dd155-c946-4cbe-9c3d-4894dd90dc2c" type="text/javascript"></script>
-
         <script src="/assets/deliveryCalculator.js" type="text/javascript"></script>
         <style>
-            html, body, #map {
+            #map {
                 width: 100%;
                 height: 100%;
                 padding: 0;
                 margin: 0;
+                scroll: false;
             }
         </style>
     </head>
@@ -57,14 +57,13 @@ function getPage(param_obj) {
     </body>
         `;
     function get_glTop() {
-        const a_tel = "8-800-888-7777";
         const result = `
         <div id="glTop">
             <div id="glTop10">
-                <div class="glTop1" id="glTop1"> "Goo Goo Goo ..."  </div>
+                <div class="glTop1" id="glTop1"> "${mClass.app_cfg.get('site_name')}"  </div>
             </div>
             <div id="glTop20">
-                <div class="glTop1" id="glTop3"> tel:${a_tel} </div>    
+                <div class="glTop1" id="glTop3"> tel:${mClass.app_cfg.get('site_tel')} </div>    
             </div>         
         </div>
         `;
@@ -109,11 +108,13 @@ function getPage(param_obj) {
                     <div id="CartStatus"> </div>
                 </div>
                  <hr>
-                ${mClass.get_html_a('Home', '/')} </br>
-                ${mClass.get_html_a('About', '/about')} </br>
-                ${mClass.get_html_a('Products', '/product')} </br>
-                <hr>
-                ${mClass.get_html_a('Init', '/init')} </br>
+              
+                    ${mClass.get_html_a('Home', '/')} </br>
+                    ${mClass.get_html_a('About', '/about')} </br>
+                    ${mClass.get_html_a('Products', '/product')} </br>
+                    <hr>
+                    ${mClass.get_html_a('Init', '/init')} </br>
+          
             </div>
         `;
         return result;

@@ -34,6 +34,7 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.get_body = void 0;
 const mDB = __importStar(require("./db_module.js"));
+const mClass = __importStar(require("./_clases.js"));
 function get_body(param_obj) {
     return __awaiter(this, void 0, void 0, function* () {
         let result = `
@@ -44,6 +45,15 @@ function get_body(param_obj) {
     </form>
     </br>
     `;
+        if (param_obj && ('user' in param_obj)) {
+            const user_id = mClass.getIDUserRegistr(param_obj.user);
+            if (!user_id) {
+                throw new Error("Error: Please Login");
+            }
+            if (!mClass.isRoleAdmin(param_obj.user)) {
+                throw new Error("Error: User role not Admin");
+            }
+        }
         if (param_obj && ('arg' in param_obj)) {
             if (param_obj.arg && ('btn' in param_obj.arg)) {
                 switch (param_obj.arg.btn) {

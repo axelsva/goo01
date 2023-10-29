@@ -5,12 +5,23 @@
     -webkit-text-size-adjust: auto
 }
 
-@media  screen and (min-width: 300px) and (max-width: 980px)  {
+
+
+@media  screen and (max-width: 625px)  {
     .glMain {
         min-width: 400px;
         width: 90%;
         margin: auto;
         background-color: #e6d1f3;
+    }
+    .glMidLeft {
+        display: block !important; 
+        width: auto !important;
+        float: none !important;
+        background-color: white;
+        margin: 2px;
+        padding: 5px;
+        border-radius: 5px;
     }
 }
 
@@ -84,12 +95,20 @@
     background-color: #b5cef5;
 }
 
-.RoundRectDark a {
+.RoundRectDark_a {
+    display: inline-flex;
     margin: 2px;
     padding: 5px;
     border-radius: 5px;
     background-color: #312c4d;
+   
+}
+
+
+
+.RoundRectDark_a a {
     color: white;
+
 }
 
 
@@ -156,10 +175,28 @@
     object-fit: cover;
 }
 
-
+input {
+    margin: 0px 0px 4px 0px;     
+}
 
 input[name="price"] {
     width: 70px;
+}
+
+
+
+button,input[type="button"],input[type="submit"] {
+    margin: 2px;
+    padding: 5px;
+    border-radius: 5px;
+    background-color: #312c4d;
+    color: white;
+
+}
+
+#div_inputaddress, #div_d_sum {
+    border: solid 1px;
+    margin: 0px 0px 4px 0px;
 }
 
 

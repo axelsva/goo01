@@ -58,6 +58,9 @@ function get_body(param_obj) {
                         yield mDB.db_CartList(user_id)
                             .then((_rows) => __awaiter(this, void 0, void 0, function* () {
                             const rows = _rows;
+                            if (rows.length == 0) {
+                                throw new Error("Error: Cart empty");
+                            }
                             const fp = yield mClass.send_order(order_param, rows);
                             order_result = `
 <script>
@@ -102,7 +105,7 @@ onload=link.click();
                     result += `<div class="p_img"><img src="${img_src}" alt ="${row.name}"></div>`;
                     result += `<div class="p_name">${mClass.get_html_a(row.name, "/product_view?id=" + row.id_product)}</div>`;
                     result += `<div class="p_price"> ${row.sum} ${mClass.app_cfg.get('RUR')}</div>`;
-                    result += `<div class="p_del"> ${mClass.get_html_a("DEL", "/cart?btn=cmd_del&id=" + row.ID)}</div>`;
+                    result += `<div class="RoundRectDark_a"> ${mClass.get_html_a("DEL", "/cart?btn=cmd_del&id=" + row.ID)}</div>`;
                     result += '</div>';
                     ssum += row.sum;
                 });
@@ -120,16 +123,18 @@ onload=link.click();
                 `;
                 result += `
                 <div id="order">
+                    <br>
                     <div id="div_form_order">
                     <form name="form_order" id="form_order" action="/cart" method="POST">
-                        Please enter: <Br>
-                        email:<input type="email" name="email" value="test@ya.ru"><Br>
-                        tel:<input type="tel" name="tel" value="7777777"><Br>
-                        comment:<input type="text" name="comment" value=""><Br>
+                        <label>Please enter data for order: </label><Br><BR>
+                        <label>Email:</label><Br><input type="email" name="email" value="test@ya.ru"><Br>
+                        <label>Tel:</label><Br><input type="tel" name="tel" value="7777777"><Br>
+                        <label>Comment:</label><Br><input type="text" name="comment" value=""><Br>
                         <input id='inputaddress'type="text" name="address" value="" hidden>
                         <input id='d_sum' type="number" name="d_sum" value="" hidden>
-                        address: <span id="div_inputaddress">Выберите адрес доставки на карте</span><br>
-                        delivery sum: <span id="div_d_sum"></span><br>
+                        <label>Address: </label><Br><div id="div_inputaddress">Выберите адрес доставки на карте</div>
+                        <label>Delivery Sum:</label><Br> <div id="div_d_sum"> 0</div>
+                        <label>* tariff: 10 руб/км, min: 50 руб </label><Br>
                         <br>
                         <button value=cmd_order type="submit" name="btn" formaction="/cart">Оформить заказ</button>
                     </form>
@@ -148,11 +153,6 @@ onload=link.click();
         else {
             throw new Error("Error: Please Login");
         }
-        result += `
-<script>
-window.scrollTo(0, 0)
-</script>
-`;
         return result;
     });
 }

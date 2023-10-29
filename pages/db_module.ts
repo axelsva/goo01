@@ -170,11 +170,8 @@ export async function db_ProductGet(a_id: number) {
     db.get(query_str, [a_id],
       (err, rows) => {
         if (err) {
-
           reject(err);
-
         } else {
-
           resolve(rows);
         }
       });

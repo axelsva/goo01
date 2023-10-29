@@ -6,7 +6,7 @@ import path from 'path';
 
 export const app_cfg = new Map();
 app_cfg.set('site_name', 'Goo Goo Goo');
-app_cfg.set('site_tel', 'Goo Goo Goo');
+app_cfg.set('site_tel', '8-800-700-8888');
 app_cfg.set('RUR', "руб");
 app_cfg.set('cookie_user_max_age', 1200);   //20 min
 
@@ -68,13 +68,6 @@ export function get_html_a_product(a_product: Product) {
     return `<a href="/product_edit?id=${a_product.ID}">ID: ${a_product.ID} </a> Name: ${a_product.name}`;
 }
 
-export function getIDUserRegistr(user_obj: object) {
-    if ('id' in user_obj) {
-        return (user_obj.id as number) || 0;
-    }
-    return 0;
-}
-
 
 export function get_html_product_img(a_id: number) {
     const stub = "/upload/stub.jpg";
@@ -96,11 +89,25 @@ export function get_html_product_img(a_id: number) {
 }
 
 
+export function getIDUserRegistr(user_obj: object) {
+    if ('id' in user_obj) {
+        return (user_obj.id as number) || 0;
+    }
+    return 0;
+}
+
 export function getNameUserRegistr(user_obj: object) {
     if ('name' in user_obj) {
         return (user_obj.name as string) || '';
     }
     return '';
+}
+
+export function isRoleAdmin(user_obj: object) {
+    if ('name' in user_obj) {
+        return (user_obj.name === 'admin') ;
+    }
+    return 0;    
 }
 
 export function NewProductFromArray(a_product: object) {

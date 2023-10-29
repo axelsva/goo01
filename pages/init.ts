@@ -13,6 +13,19 @@ export async function get_body(param_obj: mClass.RouteParam) {
     </br>
     `;
 
+    if (param_obj && ('user' in param_obj) ) {
+
+        const user_id = mClass.getIDUserRegistr(param_obj.user);
+        if (!user_id) {
+            throw new Error("Error: Please Login");
+        }
+
+        if (! mClass.isRoleAdmin(param_obj.user)) {
+            throw new Error("Error: User role not Admin");
+
+        }
+
+    }
 
 
     if (param_obj && ('arg' in param_obj)) {
@@ -21,15 +34,15 @@ export async function get_body(param_obj: mClass.RouteParam) {
             switch (param_obj.arg.btn) {
                 case 'cmd_dbcreate':
                     try {
-                        
+
                         await mDB.db_CreateDataBase()
                             .then(() => { result += 'DataBase created' })
                             .catch((err) => { result += err.message });
 
                     } catch (err) {
-                        
+
                         result += (err as Error).message;
-                        
+
                     }
 
                     break;

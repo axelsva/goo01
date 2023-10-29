@@ -29,6 +29,7 @@ function User_Login() {
 
                 div_status.innerHTML = "" + data_reg.get("name") + " - user login succes";
                 document.cookie = data.data.cook;
+                window.location.reload();
                 return;
 
             } else if (data.result === "error") {
@@ -92,6 +93,7 @@ function User_LogOut(event) {
     if (event) {
         const div_status = document.querySelector("#reg_user_status");
         div_status.innerHTML = 'User LogOut';
+        window.location.reload();
     }
 
 }
@@ -131,6 +133,44 @@ function Add_ToCart(a_ID, a_sum, a_name) {
         })
 }
 
+function CartStatus() {
+
+    let div_CartStatus = document.querySelector("#CartStatus");
+    if (div_CartStatus) {
+
+        const opt = {
+            method: 'GET',
+            headers: {
+                'Content-type': 'application/json; charset=UTF-8',
+            }
+        };
+
+        fetch('/api/v1/cart', opt)
+            .then((response) => response.json())
+            .then((data) => {
+
+                //console.log(data);
+
+                if (data.result === "ok") {
+
+                    //console.log(data.data);
+                    div_CartStatus.innerHTML = 'items in cart: ' + data.data;
+
+                } else if (data.result === "error") {
+                    //div_CartStatus.innerHTML = "" + data.message;
+                    div_CartStatus.innerHTML = "";
+
+                } else {
+                    div_CartStatus.innerHTML = "";
+
+                }
+
+            })
+
+    }
+
+    setTimeout(CartStatus, 2000);
+}
 
 document.addEventListener("DOMContentLoaded", () => {
 
@@ -145,6 +185,8 @@ document.addEventListener("DOMContentLoaded", () => {
     if (btn_LogOut) {
         btn_LogOut.addEventListener('click', User_LogOut);
     }
+
+    setTimeout(CartStatus, 2000);
 
 
 });

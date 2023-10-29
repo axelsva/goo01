@@ -1,0 +1,10 @@
+
+        Date:   29.10.2023, 21:55:20
+        User: user777
+        Tel:  7777777
+        Email:  test@ya.ru
+        Comment:  68678
+        Address:  Киров, Хлебозаводской проезд
+        Order Sum:  0 руб
+        Delivery Sum:  500 руб
+    
