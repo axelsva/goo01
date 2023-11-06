@@ -131,8 +131,6 @@ function go_run() {
 
       }
 
-      //a_page = a_page.replace("[glMidRight]", a_body);
-
       const result = ejs.render(a_page, {glBody: a_body});
 
       res.writeHead(200, { 'Content-Type': 'text/html; charset=utf-8' });

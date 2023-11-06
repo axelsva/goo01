@@ -129,7 +129,6 @@ function go_run() {
                 else {
                     a_body = "Page not found";
                 }
-                //a_page = a_page.replace("[glMidRight]", a_body);
                 const result = ejs_1.default.render(a_page, { glBody: a_body });
                 res.writeHead(200, { 'Content-Type': 'text/html; charset=utf-8' });
                 res.write(result);

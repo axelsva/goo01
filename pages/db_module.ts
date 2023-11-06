@@ -115,7 +115,7 @@ export async function db_ProductList(a_name: string, a_price: number) {
 
     if (a_name === '') {
 
-      query_str = 'select * from product order by name DESC';
+      query_str = 'select * from product order by name ASC';
       db.all(query_str, [],
 
         (err, rows) => {
