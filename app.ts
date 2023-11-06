@@ -85,7 +85,6 @@ function go_run() {
           } catch (_err) {
             console.error("srvAPIRoute", _err);
           }
-
         } else {
           a_body = "srvAPIRoute: Data not found";
         }
