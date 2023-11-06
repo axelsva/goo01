@@ -1,0 +1,50 @@
+<h1>
+    <%= title %> page
+</h1>
+
+
+<% if (isAdmin) { %>
+    <div class="RoundRectDark_a"> <a href="/product_edit?id=new">добавить товар</a></div>
+<% } %>
+
+
+<div class="RoundRectDark">
+    <form name="form_product_filtr" id="form_product_filtr" action="/product" method="GET">
+        Фильтр:<input type="text" name="name" value="">
+        Цена: <input type="number" name="price" value="">
+        <button value=cmd_filtr type="submit" name="btn" formaction="/product">Отфильтровать</button>
+    </form>
+</div>
+
+
+<div class="productlist">
+
+    <div class="productitemcaption">
+        <div class="p_id">ID</div>
+        <div class="p_img">IMG</div>
+        <div class="p_name">NAME</div>
+        <div class="p_articul">ARTIKUL</div>
+        <div class="p_price">PRICE</div>
+    </div>
+
+
+    <% for (let ii=0; ii < products.length; ii++) { %>
+
+        <div class="productitem">
+            <div class="p_id"><%= products[ii].ID %></div>
+            <div class="p_img"><img src="<%= products[ii].src %>" alt ="<%= products[ii].name %>"></div>
+            <div class="p_name"><a href="/product_view?id=<%= products[ii].ID %>"><%= products[ii].name %></a></div>
+            <div class="p_articul"><%= products[ii].articul %></div>
+            <div class="p_price"><%= products[ii].price %> <%= products[ii].RUR %></div>
+            <input id="btn_addtocart" type="button" name="<%= products[ii].ID %>" onclick="Add_ToCart(<%= products[ii].ID %>,<%= products[ii].price %>,'<%= products[ii].name %>')"  value="В Корзину">
+        
+            <% if (isAdmin) { %>
+                <div class="RoundRectDark_a"><a href="/product_edit?id=<%= products[ii].ID %>">Edit</a></div>
+            <% } %>
+        
+        </div>
+
+    <% } %>
+
+
+</div>

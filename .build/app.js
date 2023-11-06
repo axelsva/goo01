@@ -37,10 +37,10 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
 Object.defineProperty(exports, "__esModule", { value: true });
 const https_1 = __importDefault(require("https"));
 const fs_1 = __importDefault(require("fs"));
-const path_1 = __importDefault(require("path"));
 const url_1 = __importDefault(require("url"));
 const querystring_1 = __importDefault(require("querystring"));
-const mClass = __importStar(require("./pages/_clases.js"));
+const ejs_1 = __importDefault(require("ejs"));
+const mClass = __importStar(require("./pages/_clases"));
 function go_run() {
     const options = {
         key: fs_1.default.readFileSync('./key/key.pem'),
@@ -74,70 +74,15 @@ function go_run() {
                 };
                 const url_obj = url_1.default.parse("" + req.url, true);
                 param_obj.pathname = "" + url_obj.pathname;
-                if (req.method === 'POST') {
-                    param_obj.arg = querystring_1.default.parse(body);
-                }
-                else if (req.method === 'GET') {
+                if (req.method === 'GET') {
                     param_obj.arg = url_obj.query;
                 }
-                else if (req.method === 'PUT') {
+                else {
                     param_obj.arg = querystring_1.default.parse(body);
-                }
-                else if (req.method === 'DEL') {
-                    param_obj.arg = querystring_1.default.parse(body);
-                }
-                console.log("param_obj: ", JSON.stringify(param_obj));
-                // static resourse/file
-                if (param_obj.method === 'GET') {
-                    const filePath = path_1.default.join(__dirname, param_obj.pathname).split("%20").join(" ");
-                    const ext = path_1.default.extname(param_obj.pathname);
-                    if (ext) {
-                        //console.log('Static resourse: ', __dirname, filePath, ext);
-                        try {
-                            // Setting default Content-Type
-                            let contentType = "text/plain";
-                            switch (ext) {
-                                case '.png':
-                                    contentType = 'image/png';
-                                    break;
-                                case '.jpg':
-                                    contentType = 'image/jpg';
-                                    break;
-                                case '.jpeg':
-                                    contentType = 'image/jpeg';
-                                    break;
-                                case '.gif':
-                                    contentType = 'image/gif';
-                                    break;
-                                case '.css':
-                                    contentType = 'text/css';
-                                    break;
-                            }
-                            // Reading the file
-                            const content = fs_1.default.readFileSync(filePath);
-                            if (content) {
-                                res.writeHead(200, { "Content-Type": contentType });
-                                res.end(content);
-                                //console.log('static --------------OK');
-                                return;
-                            }
-                            else {
-                                res.writeHead(404, { "Content-Type": "text/plain" });
-                                res.end("404 Not Found");
-                                console.log('static 404 Not Found', filePath);
-                                return;
-                            }
-                        }
-                        catch (_err) {
-                            res.writeHead(404, { "Content-Type": "text/plain" });
-                            res.end("404 Not Found");
-                            console.log('static2 404 Not Found', _err.message);
-                            return;
-                        }
-                    }
                 }
                 const cookie_str = req.headers.cookie || '';
                 param_obj.user = mClass.GetUser_FromCookies(cookie_str);
+                console.log("param_obj: ", JSON.stringify(param_obj));
                 if (param_obj.pathname.includes('/api/v1')) {
                     const srvAPIRoute = new Map();
                     srvAPIRoute.set('/api/v1/user', './api_v1/user');
@@ -148,10 +93,8 @@ function go_run() {
                             const v_route = yield Promise.resolve(`${srvAPIRoute.get(param_obj.pathname)}`).then(s => __importStar(require(s)));
                             a_body = yield v_route.get_body(param_obj);
                         }
-                        catch (_e) {
-                            const e = _e;
-                            a_body = e.message;
-                            console.log("srvAPIRoute", JSON.stringify(e));
+                        catch (_err) {
+                            console.error("srvAPIRoute", _err);
                         }
                     }
                     else {
@@ -170,27 +113,26 @@ function go_run() {
                 srvRoute.set('/init', './pages/init');
                 srvRoute.set('/product_view', './pages/product_view');
                 srvRoute.set('/cart', './pages/cart');
-                let a_page = "";
                 const defaultPage = yield Promise.resolve().then(() => __importStar(require("./pages/_default.js")));
-                a_page = yield defaultPage.getPage(param_obj);
+                let a_page = yield defaultPage.getPage(param_obj);
                 let a_body = "";
                 if (srvRoute.has(param_obj.pathname)) {
                     try {
                         const v_route = yield Promise.resolve(`${srvRoute.get(param_obj.pathname)}`).then(s => __importStar(require(s)));
                         a_body = yield v_route.get_body(param_obj);
                     }
-                    catch (_e) {
-                        const e = _e;
-                        a_body = e.message;
-                        console.log("srvRoute", JSON.stringify(e));
+                    catch (_err) {
+                        a_body = _err.message;
+                        console.error("srvRoute", _err);
                     }
                 }
                 else {
                     a_body = "Page not found";
                 }
-                a_page = a_page.replace("[glMidRight]", a_body);
+                //a_page = a_page.replace("[glMidRight]", a_body);
+                const result = ejs_1.default.render(a_page, { glBody: a_body });
                 res.writeHead(200, { 'Content-Type': 'text/html; charset=utf-8' });
-                res.write(a_page);
+                res.write(result);
                 res.end();
                 return;
             });

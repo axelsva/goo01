@@ -1,13 +1,13 @@
 
 import crypto from 'crypto';
-import cookie = require("cookie");
+import cookie from 'cookie';
 import fs from 'fs';
 import path from 'path';
 
 export const app_cfg = new Map();
 app_cfg.set('site_name', 'Goo Goo Goo');
 app_cfg.set('site_tel', '8-800-700-8888');
-app_cfg.set('RUR', "руб");
+app_cfg.set('RUR', 'руб');
 app_cfg.set('cookie_user_max_age', 1200);   //20 min
 
 
@@ -25,7 +25,9 @@ export interface Product {
     name: string,
     articul: string,
     description: string,
-    price: number
+    price: number,
+    src: string,
+    RUR: string
 }
 
 export interface TUser {
@@ -77,6 +79,7 @@ export function get_html_product_img(a_id: number) {
     const fp = `/upload/${a_num}.jpg`;
     const filePath = path.join(__dirname, '..' + fp);
 
+    // check exist file
     try {
         fs.openSync(filePath, 'r');
         result = fp;
@@ -107,7 +110,7 @@ export function isRoleAdmin(user_obj: object) {
     if ('name' in user_obj) {
         return (user_obj.name === 'admin') ;
     }
-    return 0;    
+    return false;    
 }
 
 export function NewProductFromArray(a_product: object) {

@@ -13,10 +13,8 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
 };
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.db_CartDelProduct = exports.db_CartList = exports.db_AddToCart = exports.db_UserGet = exports.db_UserAdd = exports.db_ProductUpdate = exports.db_ProductGet = exports.db_ProductList = exports.db_ProductAdd = exports.db_CreateDataBase = void 0;
-//import fs from "fs";
 const sqlite3_1 = __importDefault(require("sqlite3"));
 const path_1 = __importDefault(require("path"));
-//sqlite3.verbose();
 const dbpath = path_1.default.join(__dirname, "../goo01.db");
 function db_CreateDataBase() {
     return __awaiter(this, void 0, void 0, function* () {
@@ -28,12 +26,12 @@ function db_CreateDataBase() {
                     }
                 });
                 db.run(`CREATE TABLE IF NOT EXISTS product ( 
-      ID INTEGER PRIMARY KEY AUTOINCREMENT,
-      name VARCHAR(50) NOT NULL,
-      articul   VARCHAR(20) NOT NULL,
-      description  VARCHAR(50) NOT NULL,
-      price real NOT NULL );
-      `, (err) => {
+        ID INTEGER PRIMARY KEY AUTOINCREMENT,
+        name VARCHAR(50) NOT NULL,
+        articul   VARCHAR(20) NOT NULL,
+        description  VARCHAR(50) NOT NULL,
+        price real NOT NULL );
+        `, (err) => {
                     if (err) {
                         reject(err);
                     }
@@ -104,7 +102,7 @@ function db_ProductList(a_name, a_price) {
             });
             let query_str = '';
             if (a_name === '') {
-                query_str = 'select * from product order by name';
+                query_str = 'select * from product order by name DESC';
                 db.all(query_str, [], (err, rows) => {
                     if (err) {
                         reject(err);

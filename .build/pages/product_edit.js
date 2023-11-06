@@ -31,108 +31,76 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
         step((generator = generator.apply(thisArg, _arguments || [])).next());
     });
 };
+var __importDefault = (this && this.__importDefault) || function (mod) {
+    return (mod && mod.__esModule) ? mod : { "default": mod };
+};
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.get_body = void 0;
-const mClass = __importStar(require("./_clases.js"));
-const mDB = __importStar(require("./db_module.js"));
+const ejs_1 = __importDefault(require("ejs"));
+const mClass = __importStar(require("./_clases"));
+const mDB = __importStar(require("./db_module"));
 function get_body(param_obj) {
     return __awaiter(this, void 0, void 0, function* () {
-        let result_edit = `
-        <h1>Product EDIT page</h1>
-        <div id="div_form_edit_product">
-        <form name="form_edit_product" id="form_edit_product" action="/product_edit" method="POST">
-            <label>ID: [gl_product_ID] </label> <Br> <input type="hidden" name="id" value="[gl_product_ID]" ><Br>
-            <label>Название:</label> <Br> <input type="text" name="name" value="[gl_product_name]"><Br>
-            <label>Артикул:</label> <Br> <input type="text" name="articul" value="[gl_product_articul]"><Br>
-            <label>Описание:</label> <Br> <input type="text" name="description" value="[gl_product_description]"><Br>
-            <label>Цена:</label> <Br> <input type="number" name="price" value="[gl_product_price]"><Br>
-            <br>
-            <button value=cmd_updateproduct  type="submit" name="btn" formaction="/product_edit">Обновить товар</button>
-            <button value=""  type="submit" name="btn" formaction="/product">К списку товаров</button>
-        </form>
-        </div>
-        `;
-        let result = `
-        <h1>Product ADD page</h1>
-        <div>
-        <form name="form_add_product" id="form_add_product"  action="/product_edit" method="POST">
-            <label>Название:</label> <Br><input type="text" name="name" value=""><Br>
-            <label>Артикул:</label> <Br><input type="text" name="articul" value=""><Br>
-            <label>Описание:</label> <Br><input type="text" name="description" value=""><Br>
-            <label>Цена:</label> <Br><input type="number" name="price" value=""><Br>
-            <br>
-            <button value=cmd_addproduct  type="submit" name="btn" formaction="/product_edit">Добавить товар</button>
-            <button value=cmd_addproduct  type="reset" name="btn" formaction="/product_edit">Очистить</button>
-            <button value=""  type="submit" name="btn" formaction="/product">К списку товаров</button>
-        </form>
-        </div>
-        `;
+        let result = '';
+        const _data = {
+            title: 'Product VIEW',
+            cmdEdit: 0,
+            products: {},
+            msg: ''
+        };
+        let product_db = {};
         if (param_obj && ('method' in param_obj) && ('arg' in param_obj)) {
             if (param_obj.method === 'POST' && param_obj.arg && ('btn' in param_obj.arg)) {
-                let a_product = {};
                 switch (param_obj.arg.btn) {
-                    case 'cmd_error':
-                        result += `
-                    <p>
-                    <a href="/product">Redirect</a>
-                    </p>
-                    <script>
-                    setTimeout(function() {
-                        window.location.href = "/about";
-                        }, 3000); 
-                        </script>
-                    `;
-                        //throw new Error("Error 777 ");
-                        break;
                     case 'cmd_addproduct':
                         try {
-                            a_product = mClass.NewProductFromArray(param_obj.arg);
-                            const err_arr = mClass.ProductValidate(a_product);
+                            product_db = mClass.NewProductFromArray(param_obj.arg);
+                            const err_arr = mClass.ProductValidate(product_db);
                             if (err_arr.length > 0) {
-                                throw new Error(err_arr.join(';'));
+                                throw new Error(err_arr.join('; '));
                             }
-                            yield mDB.db_ProductAdd(a_product)
-                                .then(() => { result += 'Success add: ' + a_product.name; })
-                                .catch((err) => { result += err.message; });
+                            yield mDB.db_ProductAdd(product_db)
+                                .then(() => { _data.msg = 'Success add: ' + product_db.name; })
+                                .catch((err) => { throw err; });
                         }
                         catch (err) {
-                            result += err.message;
+                            throw err;
                         }
                         break;
                     case 'cmd_updateproduct':
                         try {
-                            a_product = mClass.NewProductFromArray(param_obj.arg);
-                            const err_arr = mClass.ProductValidate(a_product);
+                            product_db = mClass.NewProductFromArray(param_obj.arg);
+                            const err_arr = mClass.ProductValidate(product_db);
                             if (err_arr.length > 0) {
-                                throw new Error(err_arr.join(';'));
+                                throw new Error(err_arr.join('; '));
                             }
-                            yield mDB.db_ProductUpdate(a_product)
-                                .then(() => { result += 'Success update: ' + mClass.get_html_a_product(a_product); })
-                                .catch((err) => { result += err.message; });
+                            yield mDB.db_ProductUpdate(product_db)
+                                .then(() => { _data.msg = 'Success update: ' + product_db.name; })
+                                .catch((err) => { throw err; });
                         }
                         catch (err) {
-                            result += err.message;
+                            throw err;
                         }
                         break;
                 }
             }
             else if (param_obj.method === 'GET' && param_obj.arg) {
                 if ('id' in param_obj.arg && param_obj.arg.id > 0) {
-                    result = result_edit;
+                    _data.cmdEdit = 1;
                     yield mDB.db_ProductGet(param_obj.arg.id)
                         .then((_product_db) => {
-                        const product_db = _product_db;
-                        //result += 'Success get: ' + JSON.stringify(product_db);
-                        result = result.split("[gl_product_ID]").join("" + product_db.ID);
-                        result = result.replace("[gl_product_name]", product_db.name);
-                        result = result.replace("[gl_product_articul]", product_db.articul);
-                        result = result.replace("[gl_product_description]", product_db.description);
-                        result = result.replace("[gl_product_price]", "" + product_db.price);
+                        product_db = _product_db;
                     })
-                        .catch((err) => { result += err.message; });
+                        .catch((err) => { throw err; });
                 }
             }
         }
+        _data.products = product_db;
+        yield ejs_1.default.renderFile('./pages/product_edit.ejs', _data, {}, function (err, str) {
+            if (err)
+                throw err;
+            result = str;
+        });
         return result;
     });
 }

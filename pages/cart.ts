@@ -1,5 +1,5 @@
-import * as mClass from './_clases.js';
-import * as mDB from './db_module.js';
+import * as mClass from './_clases';
+import * as mDB from './db_module';
 
 //  GET ../cart    :get carts if User authorized
 //  GET ../cart?btn=cmd_del&id=1    :del product from cart

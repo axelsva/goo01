@@ -33,8 +33,8 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
 };
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.get_body = void 0;
-const mClass = __importStar(require("./_clases.js"));
-const mDB = __importStar(require("./db_module.js"));
+const mClass = __importStar(require("./_clases"));
+const mDB = __importStar(require("./db_module"));
 //  GET ../cart    :get carts if User authorized
 //  GET ../cart?btn=cmd_del&id=1    :del product from cart
 //  GET ../cart?btn=cmd_order....     :get order

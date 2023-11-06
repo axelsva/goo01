@@ -36,61 +36,59 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
 };
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.get_body = void 0;
-const mDB = __importStar(require("./db_module.js"));
-const mClass = __importStar(require("./_clases.js"));
-//import QRCode = require("qrcode");
+const ejs_1 = __importDefault(require("ejs"));
 const qrcode_1 = __importDefault(require("qrcode"));
-function getQR_net() {
-    return __awaiter(this, void 0, void 0, function* () {
-        return new Promise((resolve) => {
-            var os = require('os');
-            let ifaces = os.networkInterfaces();
-            Object.keys(ifaces).forEach(function (ifname) {
-                let alias = 0;
-                ifaces[ifname].forEach(function (iface) {
-                    return __awaiter(this, void 0, void 0, function* () {
-                        if (('family' in iface) && ('internal' in iface) && ('address' in iface)) {
-                            if ('IPv4' !== iface.family || iface.internal !== false) {
-                                // skip over internal (i.e. 127.0.0.1) and non-ipv4 addresses
-                                return;
-                            }
-                            if (alias >= 1) {
-                                // this single interface has multiple ipv4 addresses
-                                //console.log(ifname + ':' + alias, iface.address);
-                            }
-                            else {
-                                // this interface has only one ipv4 adress
-                                //console.log(ifname, iface.address);
-                                // With promises
-                                const _str = `https://${iface.address}:8000`;
-                                yield qrcode_1.default.toDataURL(_str)
-                                    .then((url) => {
-                                    //console.log('qr:', url);
-                                    const _res = `<br><b>${_str} </b> <br> <img src="${url}" /> <br>`;
-                                    resolve(_res);
-                                })
-                                    .catch((err) => {
-                                    console.error(err.message);
-                                });
-                            }
-                            ++alias;
-                        }
-                    });
-                });
-            });
+const mDB = __importStar(require("./db_module"));
+const mClass = __importStar(require("./_clases"));
+function get_ipv4() {
+    let result = [];
+    var os = require('os');
+    let ifaces = os.networkInterfaces();
+    Object.keys(ifaces).forEach(function (ifname) {
+        let alias = 0;
+        ifaces[ifname].forEach(function (iface) {
+            if (('family' in iface) && ('internal' in iface) && ('address' in iface)) {
+                if ('IPv4' !== iface.family || iface.internal !== false) {
+                    // skip over internal (i.e. 127.0.0.1) and non-ipv4 addresses
+                    return;
+                }
+                if (alias >= 1) {
+                    // this single interface has multiple ipv4 addresses
+                    //console.log(ifname + ':' + alias, iface.address);
+                    result.push('' + iface.address);
+                }
+                else {
+                    // this interface has only one ipv4 adress
+                    //console.log(ifname, iface.address);
+                    result.push('' + iface.address);
+                }
+                ++alias;
+            }
         });
+    });
+    return result;
+}
+function get_QR(address) {
+    return __awaiter(this, void 0, void 0, function* () {
+        let result = '';
+        for (let i = 0; i < address.length; i++) {
+            const _str = `https://${address[i]}:8000`;
+            yield qrcode_1.default.toDataURL(_str)
+                .then((url) => {
+                result += `<br>${_str}<br><img src="${url}" /><br>`;
+            })
+                .catch((err) => { throw err; });
+        }
+        return result;
     });
 }
 function get_body(param_obj) {
     return __awaiter(this, void 0, void 0, function* () {
-        let result = `
-    <h1>INIT page</h1>
-    </br>
-    <form  method="get">
-        <button value=cmd_dbcreate  type="submit" name="btn" formaction="/init"> DB Create </button>
-    </form>
-    </br>
-    `;
+        let result = '';
+        const _data = {
+            title: 'INIT',
+            msg: ''
+        };
         if (param_obj && ('user' in param_obj)) {
             const user_id = mClass.getIDUserRegistr(param_obj.user);
             if (!user_id) {
@@ -106,18 +104,24 @@ function get_body(param_obj) {
                     case 'cmd_dbcreate':
                         try {
                             yield mDB.db_CreateDataBase()
-                                .then(() => { result += 'DataBase created'; })
-                                .catch((err) => { result += err.message; });
+                                .then(() => { _data.msg = 'DataBase created '; })
+                                .catch((err) => { throw err; });
                         }
                         catch (err) {
-                            result += err.message;
+                            throw err;
                         }
                         break;
                 }
             }
         }
-        const qr_data = yield getQR_net();
-        result += qr_data;
+        const _address = get_ipv4();
+        _address.push('localhost');
+        _data.msg += yield get_QR(_address);
+        yield ejs_1.default.renderFile('./pages/init.ejs', _data, {}, function (err, str) {
+            if (err)
+                throw err;
+            result = str;
+        });
         return result;
     });
 }

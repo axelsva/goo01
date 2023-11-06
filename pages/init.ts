@@ -1,67 +1,74 @@
-import * as mDB from './db_module.js';
-import * as mClass from './_clases.js';
-
-//import QRCode = require("qrcode");
+import ejs from 'ejs';
 import QRCode from 'qrcode'
 
-async function getQR_net() {
+import * as mDB from './db_module';
+import * as mClass from './_clases';
 
-    return new Promise((resolve) => {
 
-        var os = require('os');
-        let ifaces = os.networkInterfaces();
 
-        Object.keys(ifaces).forEach(function (ifname) {
-            let alias = 0;
+function get_ipv4() {
 
-            ifaces[ifname].forEach(async function (iface: object) {
+    let result: Array<string> = [];
 
-                if (('family' in iface) && ('internal' in iface) && ('address' in iface)) {
+    var os = require('os');
+    let ifaces = os.networkInterfaces();
 
-                    if ('IPv4' !== iface.family || iface.internal !== false) {
-                        // skip over internal (i.e. 127.0.0.1) and non-ipv4 addresses
-                        return;
-                    }
+    Object.keys(ifaces).forEach(function (ifname) {
+        let alias = 0;
 
-                    if (alias >= 1) {
-                        // this single interface has multiple ipv4 addresses
-                        //console.log(ifname + ':' + alias, iface.address);
-                    } else {
-                        // this interface has only one ipv4 adress
-                        //console.log(ifname, iface.address);
+        ifaces[ifname].forEach(function (iface: object) {
 
-                        // With promises
-                        const _str = `https://${iface.address}:8000`;
-                        await QRCode.toDataURL(_str)
-                            .then((url) => {
-                                //console.log('qr:', url);
-                                
-                                const _res  = `<br><b>${_str} </b> <br> <img src="${url}" /> <br>`;
-                                resolve(_res);
-                            })
-                            .catch((err) => {
-                                console.error((err as Error).message)
-                            })
-                    }
-                    ++alias;
+            if (('family' in iface) && ('internal' in iface) && ('address' in iface)) {
+
+                if ('IPv4' !== iface.family || iface.internal !== false) {
+                    // skip over internal (i.e. 127.0.0.1) and non-ipv4 addresses
+                    return;
                 }
-            });
 
+                if (alias >= 1) {
+                    // this single interface has multiple ipv4 addresses
+                    //console.log(ifname + ':' + alias, iface.address);
+                    result.push('' + iface.address);
+                } else {
+                    // this interface has only one ipv4 adress
+                    //console.log(ifname, iface.address);
+                    result.push('' + iface.address);
+                }
+                ++alias;
+            }
         });
-    })
+
+    });
+    return result;
+}
+
+async function get_QR(address: Array<string>) {
+
+    let result = '';
+
+    for (let i = 0; i < address.length; i++) {
+
+        const _str = `https://${address[i]}:8000`;
+        await QRCode.toDataURL(_str)
+            .then((url) => {
+                result += `<br>${_str}<br><img src="${url}" /><br>`;
+            })
+            .catch((err) => { throw err })
+    }
+
+    return result
 }
 
 
 export async function get_body(param_obj: mClass.RouteParam) {
 
-    let result = `
-    <h1>INIT page</h1>
-    </br>
-    <form  method="get">
-        <button value=cmd_dbcreate  type="submit" name="btn" formaction="/init"> DB Create </button>
-    </form>
-    </br>
-    `;
+    let result = '';
+
+    const _data = {
+        title: 'INIT',
+        msg: ''
+    }
+
 
     if (param_obj && ('user' in param_obj)) {
 
@@ -72,9 +79,7 @@ export async function get_body(param_obj: mClass.RouteParam) {
 
         if (!mClass.isRoleAdmin(param_obj.user)) {
             throw new Error("Error: User role not Admin");
-
         }
-
     }
 
 
@@ -82,29 +87,36 @@ export async function get_body(param_obj: mClass.RouteParam) {
         if (param_obj.arg && ('btn' in param_obj.arg)) {
 
             switch (param_obj.arg.btn) {
+
                 case 'cmd_dbcreate':
                     try {
 
                         await mDB.db_CreateDataBase()
-                            .then(() => { result += 'DataBase created' })
-                            .catch((err) => { result += err.message });
+                            .then(() => { _data.msg = 'DataBase created ' })
+                            .catch((err) => { throw err });
 
                     } catch (err) {
-
-                        result += (err as Error).message;
-
+                        throw err;
                     }
 
                     break;
-
             }
-
         }
-
     }
 
-    const qr_data = await getQR_net();
-    result += qr_data;
+
+    const _address = get_ipv4();
+    _address.push('localhost');
+    _data.msg += await get_QR(_address);
+
+    
+
+    await ejs.renderFile('./pages/init.ejs', _data, {}, function (err, str) {
+        if (err)
+            throw err;
+
+        result = str;
+    });
 
 
     return result;

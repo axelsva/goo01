@@ -31,39 +31,39 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
         step((generator = generator.apply(thisArg, _arguments || [])).next());
     });
 };
+var __importDefault = (this && this.__importDefault) || function (mod) {
+    return (mod && mod.__esModule) ? mod : { "default": mod };
+};
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.get_body = void 0;
-const mClass = __importStar(require("./_clases.js"));
-const mDB = __importStar(require("./db_module.js"));
+const ejs_1 = __importDefault(require("ejs"));
+const mClass = __importStar(require("./_clases"));
+const mDB = __importStar(require("./db_module"));
 function get_body(param_obj) {
     return __awaiter(this, void 0, void 0, function* () {
-        let result = `
-        <h1>Product view page</h1>
-        <div>
-            <h2>[gl_product_name]</h2>
-            <div><img src="[gl_product_img]" alt ="[gl_product_name]"></div>
-            <div>Название: [gl_product_name]</div>
-            <div>Артикул: [gl_product_articul]</div>
-            <div>Описание: [gl_product_description]</div>
-            <div>Цена: [gl_product_price]</div>
-        </div>
-        `;
+        let result = '';
+        const _data = {
+            title: 'Product VIEW',
+            products: {},
+        };
+        let product_db = {};
         if (param_obj && ('method' in param_obj) && ('arg' in param_obj)) {
             if (param_obj.method === 'GET' && param_obj.arg && ('id' in param_obj.arg)) {
                 yield mDB.db_ProductGet(param_obj.arg.id)
                     .then((_product_db) => {
-                    const product_db = _product_db;
-                    const img_src = mClass.get_html_product_img(product_db.ID);
-                    //result += 'Success get: ' + JSON.stringify(product_db);
-                    result = result.split("[gl_product_name]").join("" + product_db.name);
-                    result = result.replace("[gl_product_img]", img_src);
-                    result = result.replace("[gl_product_articul]", product_db.articul);
-                    result = result.replace("[gl_product_description]", product_db.description);
-                    result = result.replace("[gl_product_price]", "" + product_db.price);
+                    product_db = _product_db;
+                    product_db.src = mClass.get_html_product_img(product_db.ID);
+                    product_db.RUR = mClass.app_cfg.get('RUR');
                 })
-                    .catch((err) => { result += err.message; });
+                    .catch((err) => { throw err; });
             }
         }
+        _data.products = product_db;
+        yield ejs_1.default.renderFile('./pages/product_view.ejs', _data, {}, function (err, str) {
+            if (err)
+                throw err;
+            result = str;
+        });
         return result;
     });
 }

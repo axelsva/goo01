@@ -1,9 +1,8 @@
-//import fs from "fs";
 import sqlite3 from 'sqlite3';
 import path from 'path';
 
-import * as mClass from './_clases.js';
-//sqlite3.verbose();
+import * as mClass from './_clases';
+
 
 const dbpath = path.join(__dirname, "../goo01.db");
 
@@ -22,12 +21,12 @@ export async function db_CreateDataBase() {
         });
 
       db.run(`CREATE TABLE IF NOT EXISTS product ( 
-      ID INTEGER PRIMARY KEY AUTOINCREMENT,
-      name VARCHAR(50) NOT NULL,
-      articul   VARCHAR(20) NOT NULL,
-      description  VARCHAR(50) NOT NULL,
-      price real NOT NULL );
-      `,
+        ID INTEGER PRIMARY KEY AUTOINCREMENT,
+        name VARCHAR(50) NOT NULL,
+        articul   VARCHAR(20) NOT NULL,
+        description  VARCHAR(50) NOT NULL,
+        price real NOT NULL );
+        `,
         (err) => {
           if (err) {
             reject(err);
@@ -61,15 +60,10 @@ export async function db_CreateDataBase() {
 
 
       db.close();
-
       resolve(1);
-
     }
-
     catch (err) {
-
       reject(err);
-
     }
   })
 }
@@ -121,7 +115,7 @@ export async function db_ProductList(a_name: string, a_price: number) {
 
     if (a_name === '') {
 
-      query_str = 'select * from product order by name';
+      query_str = 'select * from product order by name DESC';
       db.all(query_str, [],
 
         (err, rows) => {

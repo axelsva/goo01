@@ -1,0 +1,41 @@
+
+<% if (cmdEdit) { %>
+
+    <h1>Product EDIT page</h1>
+    
+    <div id="div_form_edit_product">
+        <form name="form_edit_product" id="form_edit_product" action="/product_edit" method="POST">
+            <label>ID: <%= products.ID %> </label> <Br> <input type="hidden" name="id" value="<%= products.ID %>" ><Br>
+            <label>Название:</label> <Br> <input type="text" name="name" value="<%= products.name %>"><Br>
+            <label>Артикул:</label> <Br> <input type="text" name="articul" value="<%= products.articul %>"><Br>
+            <label>Описание:</label> <Br> <input type="text" name="description" value="<%= products.description %>"><Br>
+            <label>Цена:</label> <Br> <input type="number" name="price" value="<%= products.price %>"><Br>
+            <br>
+            <button value=cmd_updateproduct  type="submit" name="btn" formaction="/product_edit">Обновить товар</button>
+            <button value=""  type="submit" name="btn" formaction="/product">К списку товаров</button>
+        </form>
+        </div>
+
+<% } else { %>
+
+    <h1>Product ADD page</h1>
+    <div>
+    <form name="form_add_product" id="form_add_product"  action="/product_edit" method="POST">
+        <label>Название:</label> <Br><input type="text" name="name" value=""><Br>
+        <label>Артикул:</label> <Br><input type="text" name="articul" value=""><Br>
+        <label>Описание:</label> <Br><input type="text" name="description" value=""><Br>
+        <label>Цена:</label> <Br><input type="number" name="price" value=""><Br>
+        <br>
+        <button value=cmd_addproduct  type="submit" name="btn" formaction="/product_edit">Добавить товар</button>
+        <button value=cmd_addproduct  type="reset" name="btn" formaction="/product_edit">Очистить</button>
+        <button value=""  type="submit" name="btn" formaction="/product">К списку товаров</button>
+    </form>
+    </div>
+
+<% } %>
+
+<h3>
+    <%= msg %>
+</h3>
+
+

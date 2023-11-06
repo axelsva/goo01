@@ -5,13 +5,13 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.send_order = exports.validate_param_order = exports.NewUserFromArray = exports.GetUser_FromCookies = exports.GetCookies_FromUser = exports.GetCookies_NULLUser = exports.validPassword = exports.setPassword = exports.ProductValidate = exports.NewProductFromArray = exports.isRoleAdmin = exports.getNameUserRegistr = exports.getIDUserRegistr = exports.get_html_product_img = exports.get_html_a_product = exports.get_html_a = exports.app_cfg = void 0;
 const crypto_1 = __importDefault(require("crypto"));
-const cookie = require("cookie");
+const cookie_1 = __importDefault(require("cookie"));
 const fs_1 = __importDefault(require("fs"));
 const path_1 = __importDefault(require("path"));
 exports.app_cfg = new Map();
 exports.app_cfg.set('site_name', 'Goo Goo Goo');
 exports.app_cfg.set('site_tel', '8-800-700-8888');
-exports.app_cfg.set('RUR', "руб");
+exports.app_cfg.set('RUR', 'руб');
 exports.app_cfg.set('cookie_user_max_age', 1200); //20 min
 function get_html_a(text, href) {
     const str = `<a href="${href}">${text}</a>`;
@@ -28,6 +28,7 @@ function get_html_product_img(a_id) {
     const a_num = a_id || 0;
     const fp = `/upload/${a_num}.jpg`;
     const filePath = path_1.default.join(__dirname, '..' + fp);
+    // check exist file
     try {
         fs_1.default.openSync(filePath, 'r');
         result = fp;
@@ -57,7 +58,7 @@ function isRoleAdmin(user_obj) {
     if ('name' in user_obj) {
         return (user_obj.name === 'admin');
     }
-    return 0;
+    return false;
 }
 exports.isRoleAdmin = isRoleAdmin;
 function NewProductFromArray(a_product) {
@@ -107,18 +108,18 @@ function validPassword(password, salt, hash) {
 }
 exports.validPassword = validPassword;
 function GetCookies_NULLUser() {
-    return cookie.serialize('s_uid', "", { maxAge: 0 });
+    return cookie_1.default.serialize('s_uid', "", { maxAge: 0 });
 }
 exports.GetCookies_NULLUser = GetCookies_NULLUser;
 function GetCookies_FromUser(a_id, a_name) {
     const user_obj = { "id": a_id, "name": a_name };
     const enc_text = new TextEncoder().encode(JSON.stringify(user_obj));
-    return cookie.serialize('s_uid', enc_text.toString(), { maxAge: exports.app_cfg.get('cookie_user_max_age') });
+    return cookie_1.default.serialize('s_uid', enc_text.toString(), { maxAge: exports.app_cfg.get('cookie_user_max_age') });
 }
 exports.GetCookies_FromUser = GetCookies_FromUser;
 function GetUser_FromCookies(a_cookies) {
     //console.log(a_cookies);
-    const cookies = cookie.parse(a_cookies);
+    const cookies = cookie_1.default.parse(a_cookies);
     if (cookies && 's_uid' in cookies) {
         try {
             const str = cookies['s_uid'];

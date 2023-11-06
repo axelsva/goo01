@@ -31,27 +31,25 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
         step((generator = generator.apply(thisArg, _arguments || [])).next());
     });
 };
+var __importDefault = (this && this.__importDefault) || function (mod) {
+    return (mod && mod.__esModule) ? mod : { "default": mod };
+};
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.get_body = void 0;
-const mClass = __importStar(require("./_clases.js"));
-const mDB = __importStar(require("./db_module.js"));
+const ejs_1 = __importDefault(require("ejs"));
+const mClass = __importStar(require("./_clases"));
+const mDB = __importStar(require("./db_module"));
 function get_body(param_obj) {
     return __awaiter(this, void 0, void 0, function* () {
-        let result = `<h1>Product page</h1>`;
-        if ('user' in param_obj && mClass.isRoleAdmin(param_obj.user)) {
-            result += `
-        <div class="RoundRectDark_a" > ${mClass.get_html_a('добавить товар', '/product_edit?id=new')} </div>
-            `;
+        let result = '';
+        const _data = {
+            title: 'Product',
+            isAdmin: false,
+            products: [],
+        };
+        if ('user' in param_obj) {
+            _data.isAdmin = mClass.isRoleAdmin(param_obj.user);
         }
-        result += `        
-        <div class="RoundRectDark">
-            <form name="form_product_filtr" id="form_product_filtr" action="/product" method="GET">
-                Фильтр:<input type="text" name="name" value="">
-                Цена: <input type="number" name="price" value="">
-                <button value=cmd_filtr  type="submit" name="btn" formaction="/product">Отфильтровать</button>
-            </form>
-        </div>
-    `;
         let a_name = "";
         let a_price = 0;
         if (param_obj && ('arg' in param_obj)) {
@@ -66,38 +64,24 @@ function get_body(param_obj) {
                 }
             }
         }
+        let products_arr = [];
         yield mDB.db_ProductList(a_name, a_price)
             .then((_rows) => {
-            //result += JSON.stringify(rows);
             const rows = _rows;
-            result += '<div class="productlist">';
-            result += `<div class="productitemcaption">
-                <div class="p_id">ID</div>
-                <div class="p_img">IMG</div>
-                <div class="p_name">NAME</div>
-                <div class="p_articul">ARTIKUL</div>
-                <div class="p_price">PRICE</div>
-                </div>
-                `;
             rows.forEach((_row) => {
                 const row = _row;
-                const img_src = mClass.get_html_product_img(row.ID);
-                result += '<div class="productitem">';
-                result += `<div class="p_id"> ${row.ID} </div>`;
-                result += `<div class="p_img"><img src="${img_src}" alt ="${row.name}"></div>`;
-                result += `<div class="p_name">${mClass.get_html_a(row.name, "/product_view?id=" + row.ID)}</div>`;
-                result += `<div class="p_articul"> ${row.articul}</div>`;
-                result += `<div class="p_price"> ${row.price} ${mClass.app_cfg.get('RUR')}</div>`;
-                result += `<input id="btn_addtocart" type="button" name="${row.ID}" onclick="Add_ToCart(${row.ID},${row.price}, '${row.name}')"  value="В Корзину">`;
-                if ('user' in param_obj && mClass.isRoleAdmin(param_obj.user)) {
-                    //if user login - add edit link
-                    result += `<div class="RoundRectDark_a"> ${mClass.get_html_a('Edit', '/product_edit?id=' + row.ID)} </div>`;
-                }
-                result += '</div>';
+                row.src = mClass.get_html_product_img(row.ID);
+                row.RUR = mClass.app_cfg.get('RUR');
+                products_arr.push(row);
             });
-            result += '</div>'; //<div class="productlist">
         })
-            .catch((err) => { result += err.message; });
+            .catch((err) => { throw err; });
+        _data.products = products_arr;
+        yield ejs_1.default.renderFile('./pages/product.ejs', _data, {}, function (err, str) {
+            if (err)
+                throw err;
+            result = str;
+        });
         return result;
     });
 }
