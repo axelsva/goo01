@@ -33,8 +33,8 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
 };
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.get_body = void 0;
-const mClass = __importStar(require("../pages/_clases.js"));
-const mDB = __importStar(require("../pages/db_module.js"));
+const mClass = __importStar(require("../pages/_clases"));
+const mDB = __importStar(require("../pages/db_module"));
 function get_body(param_obj) {
     return __awaiter(this, void 0, void 0, function* () {
         let result = {};

@@ -36,7 +36,7 @@
             <div class="p_name"><a href="/product_view?id=<%= products[ii].ID %>"><%= products[ii].name %></a></div>
             <div class="p_articul"><%= products[ii].articul %></div>
             <div class="p_price"><%= products[ii].price %> <%= products[ii].RUR %></div>
-            <input id="btn_addtocart" type="button" name="<%= products[ii].ID %>" onclick="Add_ToCart(<%= products[ii].ID %>,<%= products[ii].price %>,'<%= products[ii].name %>')"  value="В Корзину">
+            <input id="btn_addtocart" type="button" name="<%= products[ii].ID %>" onclick="Add_ToCart(<%= products[ii].ID %>,<%= products[ii].price %>,'<%= products[ii].name %>')"  value="В корзину">
         
             <% if (isAdmin) { %>
                 <div class="RoundRectDark_a"><a href="/product_edit?id=<%= products[ii].ID %>">Edit</a></div>

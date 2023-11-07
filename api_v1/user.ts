@@ -1,5 +1,5 @@
-import * as mClass from '../pages/_clases.js';
-import * as mDB from '../pages/db_module.js';
+import * as mClass from '../pages/_clases';
+import * as mDB from '../pages/db_module';
 
 
 export async function get_body(param_obj: mClass.RouteParam) {
@@ -17,7 +17,7 @@ export async function get_body(param_obj: mClass.RouteParam) {
 
                     await mDB.db_UserGet(a_user.name)
                         .then((data) => {
-                            const db_user = data as mClass.TUser;
+                            const db_user = data as mClass.User;
 
                             if (db_user) {
                                 if (mClass.validPassword(a_user.psw, db_user.salt, db_user.hash)) {

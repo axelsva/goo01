@@ -1,5 +1,5 @@
-import * as mClass from '../pages/_clases.js';
-import * as mDB from '../pages/db_module.js';
+import * as mClass from '../pages/_clases';
+import * as mDB from '../pages/db_module';
 
 
 export async function get_body(param_obj: mClass.RouteParam) {

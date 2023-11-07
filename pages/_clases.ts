@@ -30,7 +30,7 @@ export interface Product {
     RUR: string
 }
 
-export interface TUser {
+export interface User {
     ID: number;
     name: string,
     psw: string,
@@ -43,7 +43,9 @@ export interface CartItem {
     id_user: number,
     id_product: number,
     sum: number,
-    name: string
+    name: string,
+    src: string,
+    RUR: string
 }
 
 //{"email":"test@ya.ru","tel":"","comment":"","address":"Киров, улица Горького, 18","d_sum":"500","btn":"cmd_order"}}
@@ -212,7 +214,7 @@ export function GetUser_FromCookies(a_cookies: string) {
 
 export function NewUserFromArray(a_user: object) {
 
-    const User = {} as TUser;
+    const User = {} as User;
 
     if ('id' in a_user) {
         User.ID = a_user.id as number;

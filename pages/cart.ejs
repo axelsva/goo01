@@ -1,0 +1,81 @@
+<h1><%= title %> page</h1>
+
+
+<div class="cartlist">
+
+    <div class="cartitemcaption">
+        <div class="p_id">ID</div>
+        <div class="p_img">IMG</div>
+        <div class="p_name">NAME</div>
+        <div class="p_price">PRICE</div>
+    </div>
+
+    <% for (let ii=0; ii < cartitems_arr.length; ii++) { %>
+
+        <div class="productitem">
+            <div class="p_id"><%= cartitems_arr[ii].id_product %></div>
+            <div class="p_img"><img src="<%= cartitems_arr[ii].src %>" alt ="<%= cartitems_arr[ii].name %>"></div>
+            <div class="p_name"><a href="/product_view?id=<%= cartitems_arr[ii].id_product %>"><%= cartitems_arr[ii].name %></a></div>
+            <div class="p_price"><%= cartitems_arr[ii].sum %> <%= cartitems_arr[ii].RUR %></div>
+            <div class="RoundRectDark_a"><a href="/cart?btn=cmd_del&id=<%= cartitems_arr[ii].ID %>">DEL</a></div>
+
+        </div>
+
+    <% } %>
+
+        
+    <div class="cartitemcaption">
+        <div class="p_id"></div>
+        <div class="p_img"></div>
+        <div class="p_name">TOTAL</div>
+        <div class="p_price"><%= ssum %> руб</div>
+    </div>
+
+</div>
+
+
+<div id="order_result">
+
+    <% if (order_result) { %>
+        <h3><%= order_result %></h3>
+    <% } %>
+
+    <% if (order_fp) { %>
+
+    <script>
+        var link = document.createElement('a');
+        link.setAttribute('href','<%= order_fp %>');
+        link.setAttribute('download','download');
+        onload=link.click();
+    </script>
+
+    <% } %>
+
+</div>
+
+
+<div id="order">
+    <br>
+    <div id="div_form_order">
+    <form name="form_order" id="form_order" action="/cart" method="POST">
+        <label><h3>Please enter data for order: </h3></label>
+        <label>Email:</label><Br><input type="email" name="email" value="test@ya.ru"><Br>
+        <label>Tel:</label><Br><input type="tel" name="tel" value="7777777"><Br>
+        <label>Comment:</label><Br><input type="text" name="comment" value=""><Br>
+        <input id='inputaddress'type="text" name="address" value="" hidden>
+        <input id='d_sum' type="number" name="d_sum" value="" hidden>
+        <label>Address: </label><Br><div id="div_inputaddress">Выберите адрес доставки на карте</div>
+        <label>Delivery Sum:</label><Br> <div id="div_d_sum"> 0</div>
+        <label>* tariff: 10 руб/км, min: 50 руб </label><Br>
+        <br>
+        <button value=cmd_order type="submit" name="btn" formaction="/cart">Оформить заказ</button>
+    </form>
+    </div>
+
+    <div id="div_form_map">
+        <p class="header">Кликните по карте, чтобы задать адрес доставки</p>
+        <div id="map"></div>
+    </div>
+
+</div>
+

@@ -102,7 +102,7 @@ function db_ProductList(a_name, a_price) {
             });
             let query_str = '';
             if (a_name === '') {
-                query_str = 'select * from product order by name DESC';
+                query_str = 'select * from product order by name ASC';
                 db.all(query_str, [], (err, rows) => {
                     if (err) {
                         reject(err);

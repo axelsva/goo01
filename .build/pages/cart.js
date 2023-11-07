@@ -1,4 +1,8 @@
 "use strict";
+//  GET ../cart    :get carts if User authorized
+//  GET ../cart?btn=cmd_del&id=1    :del product from cart
+//  GET ../cart?btn=cmd_order....     :get order
+//      "arg":{"email":"test@ya.ru","tel":"","comment":"","adress":"Киров, улица Горького, 18","d_sum":"500","btn":"cmd_order"}
 var __createBinding = (this && this.__createBinding) || (Object.create ? (function(o, m, k, k2) {
     if (k2 === undefined) k2 = k;
     var desc = Object.getOwnPropertyDescriptor(m, k);
@@ -31,20 +35,28 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
         step((generator = generator.apply(thisArg, _arguments || [])).next());
     });
 };
+var __importDefault = (this && this.__importDefault) || function (mod) {
+    return (mod && mod.__esModule) ? mod : { "default": mod };
+};
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.get_body = void 0;
+const ejs_1 = __importDefault(require("ejs"));
 const mClass = __importStar(require("./_clases"));
 const mDB = __importStar(require("./db_module"));
-//  GET ../cart    :get carts if User authorized
-//  GET ../cart?btn=cmd_del&id=1    :del product from cart
-//  GET ../cart?btn=cmd_order....     :get order
-//      "arg":{"email":"test@ya.ru","tel":"","comment":"","adress":"Киров, улица Горького, 18","d_sum":"500","btn":"cmd_order"}
 function get_body(param_obj) {
     return __awaiter(this, void 0, void 0, function* () {
-        let result = `
-        <h1>Cart page</h1>
-    `;
+        let result = '';
+        const _data = {
+            title: 'CART',
+            cartitems_arr: [],
+            order_fp: '',
+            order_result: '',
+            ssum: 0
+        };
         let order_result = '';
+        let order_fp = '';
+        let cartitems_arr = [];
+        let ssum = 0;
         if (param_obj && ('user' in param_obj)) {
             const user_id = mClass.getIDUserRegistr(param_obj.user);
             if (!user_id) {
@@ -61,18 +73,10 @@ function get_body(param_obj) {
                             if (rows.length == 0) {
                                 throw new Error("Error: Cart empty");
                             }
-                            const fp = yield mClass.send_order(order_param, rows);
-                            order_result = `
-<script>
-var link = document.createElement('a');
-link.setAttribute('href','${fp}');
-link.setAttribute('download','download');
-onload=link.click();
-</script>
-                            `;
+                            order_fp = yield mClass.send_order(order_param, rows);
                             //await mDB.db_CartClear(user_id);
                         }))
-                            .catch((err) => { order_result = err.message; });
+                            .catch((err) => { throw err; });
                     }
                     catch (err) {
                         order_result = err.message;
@@ -85,74 +89,36 @@ onload=link.click();
             }
             yield mDB.db_CartList(user_id)
                 .then((_rows) => {
-                //result += JSON.stringify(rows);
                 const rows = _rows;
-                result += '<div class="cartlist">';
-                result += `
-                <div class="cartitemcaption">
-                    <div class="p_id">ID</div>
-                    <div class="p_img">IMG</div>
-                    <div class="p_name">NAME</div>
-                    <div class="p_price">PRICE</div>
-                </div>
-                `;
-                let ssum = 0;
                 rows.forEach((_row) => {
                     const row = _row;
-                    const img_src = mClass.get_html_product_img(row.id_product);
-                    result += '<div class="productitem">';
-                    result += `<div class="p_id"> ${row.id_product} </div>`;
-                    result += `<div class="p_img"><img src="${img_src}" alt ="${row.name}"></div>`;
-                    result += `<div class="p_name">${mClass.get_html_a(row.name, "/product_view?id=" + row.id_product)}</div>`;
-                    result += `<div class="p_price"> ${row.sum} ${mClass.app_cfg.get('RUR')}</div>`;
-                    result += `<div class="RoundRectDark_a"> ${mClass.get_html_a("DEL", "/cart?btn=cmd_del&id=" + row.ID)}</div>`;
-                    result += '</div>';
+                    row.src = mClass.get_html_product_img(row.id_product);
+                    row.RUR = mClass.app_cfg.get('RUR');
+                    cartitems_arr.push(_row);
+                    // result += '<div class="productitem">';
+                    // result += `<div class="p_id"> ${row.id_product} </div>`;
+                    // result += `<div class="p_img"><img src="${img_src}" alt ="${row.name}"></div>`;
+                    // result += `<div class="p_name">${mClass.get_html_a(row.name, "/product_view?id=" + row.id_product)}</div>`;
+                    // result += `<div class="p_price"> ${row.sum} ${mClass.app_cfg.get('RUR')}</div>`;
+                    // result += `<div class="RoundRectDark_a"> ${mClass.get_html_a("DEL", "/cart?btn=cmd_del&id=" + row.ID)}</div>`;
+                    // result += '</div>';
                     ssum += row.sum;
                 });
-                result += `
-                <div class="cartitemcaption">
-                    <div class="p_id"></div>
-                    <div class="p_img"></div>
-                    <div class="p_name">TOTAL</div>
-                    <div class="p_price">${ssum} ${mClass.app_cfg.get('RUR')}</div>
-                </div>
-                `;
-                result += '</div>'; //'<div class="cartlist">'
-                result += `
-                <div id="order_result">${order_result}</div>
-                `;
-                result += `
-                <div id="order">
-                    <br>
-                    <div id="div_form_order">
-                    <form name="form_order" id="form_order" action="/cart" method="POST">
-                        <label>Please enter data for order: </label><Br><BR>
-                        <label>Email:</label><Br><input type="email" name="email" value="test@ya.ru"><Br>
-                        <label>Tel:</label><Br><input type="tel" name="tel" value="7777777"><Br>
-                        <label>Comment:</label><Br><input type="text" name="comment" value=""><Br>
-                        <input id='inputaddress'type="text" name="address" value="" hidden>
-                        <input id='d_sum' type="number" name="d_sum" value="" hidden>
-                        <label>Address: </label><Br><div id="div_inputaddress">Выберите адрес доставки на карте</div>
-                        <label>Delivery Sum:</label><Br> <div id="div_d_sum"> 0</div>
-                        <label>* tariff: 10 руб/км, min: 50 руб </label><Br>
-                        <br>
-                        <button value=cmd_order type="submit" name="btn" formaction="/cart">Оформить заказ</button>
-                    </form>
-                    </div>
-
-                    <div id="div_form_map">
-                        <p class="header">Кликните по карте, чтобы задать адрес доставки</p>
-                        <div id="map"></div>
-                    </div>
-
-                </div>
-                `;
             })
-                .catch((err) => { result += err.message; });
+                .catch((err) => { throw err; });
         }
         else {
             throw new Error("Error: Please Login");
         }
+        _data.order_fp = order_fp;
+        _data.order_result = order_result;
+        _data.cartitems_arr = cartitems_arr;
+        _data.ssum = ssum;
+        yield ejs_1.default.renderFile('./pages/cart.ejs', _data, {}, function (err, str) {
+            if (err)
+                throw err;
+            result = str;
+        });
         return result;
     });
 }

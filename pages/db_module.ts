@@ -207,7 +207,7 @@ export async function db_ProductUpdate(product: mClass.Product) {
   })
 }
 
-export async function db_UserAdd(user: mClass.TUser) {
+export async function db_UserAdd(user: mClass.User) {
 
   return new Promise(function (resolve, reject) {
 
