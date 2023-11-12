@@ -16,7 +16,7 @@ export interface RouteParam {
     method: string,
     url: string,
     pathname: string,
-    user: object,
+    user: {id:number, name: string, aid: number},
     arg: object,
 }
 
@@ -44,6 +44,7 @@ export interface CartItem {
     id_product: number,
     sum: number,
     name: string,
+    mtime: Date,
     src: string,
     RUR: string
 }
@@ -187,9 +188,21 @@ export function GetCookies_FromUser(a_id: number, a_name: string) {
 
 }
 
+export function anon_GetCookies_FromUser(a_id: number) {
+
+    return cookie.serialize('a_uid', a_id.toString(), { maxAge: 60*60*24*365});
+
+}
+
 export function GetUser_FromCookies(a_cookies: string) {
 
     //console.log(a_cookies);
+    const a_user = {
+            id: 0,
+            name: '',
+            aid: 0
+    };
+
     const cookies = cookie.parse(a_cookies);
 
     if (cookies && 's_uid' in cookies) {
@@ -199,15 +212,26 @@ export function GetUser_FromCookies(a_cookies: string) {
             const str1 = str.split(',');
             const uArr = Uint8Array.from(str1, (x) => { return parseInt(x, 10); });
             const dec_obj = JSON.parse(new TextDecoder("utf-8").decode(uArr));
-            console.log("dec_obj", dec_obj);
 
-            return dec_obj || {};
-
+            a_user.id = dec_obj.id;
+            a_user.name = dec_obj.name;
         } catch {
-            return {};
+           
         }
     }
-    return {};
+
+    if (cookies && 'a_uid' in cookies) {
+
+        try {
+            a_user.aid = Number(cookies['a_uid']);
+
+        } catch {
+           
+        }
+    }
+
+    console.log("a_user", a_user);
+    return a_user;
 }
 
 

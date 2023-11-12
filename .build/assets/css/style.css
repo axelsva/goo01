@@ -141,6 +141,13 @@
     background-color: #eeeeee;
 }
 
+.p_date {
+    float: left;
+    width: 80px;
+    text-align: left;
+    padding: 5px;
+}
+
 .p_id {
     float: left;
     width: 40px;

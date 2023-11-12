@@ -1,0 +1,39 @@
+<h1><%= title %> page</h1>
+
+
+<div class="cartlist">
+
+    <div class="cartitemcaption">
+        <div class="p_date">Date</div>
+        <div class="p_id">ID</div>
+        <div class="p_img">IMG</div>
+        <div class="p_name">NAME</div>
+        <div class="p_price">PRICE</div>
+    </div>
+
+    <% for (let ii=0; ii < cartitems_arr.length; ii++) { %>
+
+        <div class="productitem">
+            <div class="p_date"><%= cartitems_arr[ii].mtime %></div>
+            <div class="p_id"><%= cartitems_arr[ii].id_product %></div>
+            <div class="p_img"><img src="<%= cartitems_arr[ii].src %>" alt ="<%= cartitems_arr[ii].name %>"></div>
+            <div class="p_name"><a href="/product_view?id=<%= cartitems_arr[ii].id_product %>"><%= cartitems_arr[ii].name %></a></div>
+            <div class="p_price"><%= cartitems_arr[ii].sum %> <%= cartitems_arr[ii].RUR %></div>
+            
+        </div>
+
+    <% } %>
+
+        
+    <div class="cartitemcaption">
+        <div class="p_date"></div>
+        <div class="p_id"></div>
+        <div class="p_img"></div>
+        <div class="p_name">TOTAL</div>
+        <div class="p_price"><%= ssum %> руб</div>
+    </div>
+
+</div>
+
+
+

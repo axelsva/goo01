@@ -69,7 +69,7 @@ function go_run() {
                     method: "" + req.method,
                     url: "" + req.url,
                     pathname: "",
-                    user: {},
+                    user: { id: 0, name: '', aid: 0 },
                     arg: {},
                 };
                 const url_obj = url_1.default.parse("" + req.url, true);
@@ -82,6 +82,9 @@ function go_run() {
                 }
                 const cookie_str = req.headers.cookie || '';
                 param_obj.user = mClass.GetUser_FromCookies(cookie_str);
+                if (!param_obj.user.aid) {
+                    param_obj.user.aid = new Date().getTime();
+                }
                 console.log("param_obj: ", JSON.stringify(param_obj));
                 if (param_obj.pathname.includes('/api/v1')) {
                     const srvAPIRoute = new Map();
@@ -113,6 +116,7 @@ function go_run() {
                 srvRoute.set('/init', './pages/init');
                 srvRoute.set('/product_view', './pages/product_view');
                 srvRoute.set('/cart', './pages/cart');
+                srvRoute.set('/carthist', './pages/carthistory');
                 const defaultPage = yield Promise.resolve().then(() => __importStar(require("./pages/_default.js")));
                 let a_page = yield defaultPage.getPage(param_obj);
                 let a_body = "";
@@ -130,7 +134,10 @@ function go_run() {
                     a_body = "Page not found";
                 }
                 const result = ejs_1.default.render(a_page, { glBody: a_body });
-                res.writeHead(200, { 'Content-Type': 'text/html; charset=utf-8' });
+                res.writeHead(200, {
+                    'Content-Type': 'text/html; charset=utf-8',
+                    'Set-Cookie': mClass.anon_GetCookies_FromUser(param_obj.user.aid)
+                });
                 res.write(result);
                 res.end();
                 return;

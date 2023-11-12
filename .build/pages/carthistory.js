@@ -35,28 +35,39 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.getPage = void 0;
+exports.get_body = void 0;
 const ejs_1 = __importDefault(require("ejs"));
 const mClass = __importStar(require("./_clases"));
-function getPage(param_obj) {
+const mDB = __importStar(require("./db_module"));
+function get_body(param_obj) {
     return __awaiter(this, void 0, void 0, function* () {
         let result = '';
         const _data = {
-            site_name: mClass.app_cfg.get('site_name'),
-            site_tel: mClass.app_cfg.get('site_tel'),
-            isUser: '',
-            isUserID: 0,
-            isUseraID: 0,
-            glRight: '<%- glBody %>',
-            glBottom: JSON.stringify(param_obj)
+            title: 'ORDER History',
+            cartitems_arr: [],
+            ssum: 0
         };
-        if ('user' in param_obj) {
-            _data.isUser = mClass.getNameUserRegistr(param_obj.user);
-            _data.isUserID = mClass.getIDUserRegistr(param_obj.user);
-            _data.isUseraID = param_obj.user.aid;
+        let cartitems_arr = [];
+        let ssum = 0;
+        const user_id = mClass.getIDUserRegistr(param_obj.user) || param_obj.user.aid;
+        if (!user_id) {
+            throw new Error("Error: Please Login");
         }
-        ;
-        yield ejs_1.default.renderFile('./pages/_default.ejs', _data, {}, function (err, str) {
+        yield mDB.db_CartListOrdered(user_id)
+            .then((_rows) => {
+            const rows = _rows;
+            rows.forEach((_row) => {
+                const row = _row;
+                row.src = mClass.get_html_product_img(row.id_product);
+                row.RUR = mClass.app_cfg.get('RUR');
+                cartitems_arr.push(_row);
+                ssum += row.sum;
+            });
+        })
+            .catch((err) => { throw err; });
+        _data.cartitems_arr = cartitems_arr;
+        _data.ssum = ssum;
+        yield ejs_1.default.renderFile('./pages/carthistory.ejs', _data, {}, function (err, str) {
             if (err)
                 throw err;
             result = str;
@@ -64,4 +75,4 @@ function getPage(param_obj) {
         return result;
     });
 }
-exports.getPage = getPage;
+exports.get_body = get_body;

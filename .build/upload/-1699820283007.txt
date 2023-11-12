@@ -1,0 +1,12 @@
+
+        Date:   12.11.2023, 23:18:02
+        User: 
+        Tel:  7777777
+        Email:  test@ya.ru
+        Comment:  
+        Address:  Кировская область, Слободской район, Бобинское сельское поселение
+        Order Sum:  39 руб
+        Delivery Sum:  210 руб
+    
+ITEM: 0 - Name: Тов 346, ProdID: 7, Sum: 5 руб
+ITEM: 1 - Name: Крос 225, ProdID: 1, Sum: 34 руб

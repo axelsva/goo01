@@ -58,7 +58,7 @@ function get_body(param_obj) {
         let cartitems_arr = [];
         let ssum = 0;
         if (param_obj && ('user' in param_obj)) {
-            const user_id = mClass.getIDUserRegistr(param_obj.user);
+            const user_id = mClass.getIDUserRegistr(param_obj.user) || param_obj.user.aid;
             if (!user_id) {
                 throw new Error("Error: Please Login");
             }
@@ -74,7 +74,7 @@ function get_body(param_obj) {
                                 throw new Error("Error: Cart empty");
                             }
                             order_fp = yield mClass.send_order(order_param, rows);
-                            //await mDB.db_CartClear(user_id);
+                            yield mDB.db_CartToOrder(user_id);
                         }))
                             .catch((err) => { throw err; });
                     }
@@ -95,13 +95,6 @@ function get_body(param_obj) {
                     row.src = mClass.get_html_product_img(row.id_product);
                     row.RUR = mClass.app_cfg.get('RUR');
                     cartitems_arr.push(_row);
-                    // result += '<div class="productitem">';
-                    // result += `<div class="p_id"> ${row.id_product} </div>`;
-                    // result += `<div class="p_img"><img src="${img_src}" alt ="${row.name}"></div>`;
-                    // result += `<div class="p_name">${mClass.get_html_a(row.name, "/product_view?id=" + row.id_product)}</div>`;
-                    // result += `<div class="p_price"> ${row.sum} ${mClass.app_cfg.get('RUR')}</div>`;
-                    // result += `<div class="RoundRectDark_a"> ${mClass.get_html_a("DEL", "/cart?btn=cmd_del&id=" + row.ID)}</div>`;
-                    // result += '</div>';
                     ssum += row.sum;
                 });
             })

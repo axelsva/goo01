@@ -13,7 +13,7 @@ export async function get_body(param_obj: mClass.RouteParam) {
 
             try {
 
-                const user_id = mClass.getIDUserRegistr(param_obj.user);
+                let user_id = mClass.getIDUserRegistr(param_obj.user) || param_obj.user.aid;
                 if (!user_id) {
                     throw new Error("Error: Please Login");
                 }
@@ -53,7 +53,7 @@ export async function get_body(param_obj: mClass.RouteParam) {
 
             try {
 
-                const user_id = mClass.getIDUserRegistr(param_obj.user);
+                const user_id = mClass.getIDUserRegistr(param_obj.user) || param_obj.user.aid;
                 if (!user_id) {
                     throw new Error("Error: Please Login");
                 }

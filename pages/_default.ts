@@ -12,6 +12,7 @@ export async function getPage(param_obj: mClass.RouteParam) {
         site_tel: mClass.app_cfg.get('site_tel'),
         isUser: '',
         isUserID: 0,
+        isUseraID: 0,
         glRight: '<%- glBody %>',
         glBottom: JSON.stringify(param_obj)
     };
@@ -19,6 +20,7 @@ export async function getPage(param_obj: mClass.RouteParam) {
     if ('user' in param_obj) {
         _data.isUser = mClass.getNameUserRegistr(param_obj.user);
         _data.isUserID = mClass.getIDUserRegistr(param_obj.user);
+        _data.isUseraID = param_obj.user.aid;
     };
 
 

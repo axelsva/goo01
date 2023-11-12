@@ -42,7 +42,7 @@ function get_body(param_obj) {
             // add product to cart
             if (param_obj.method === 'POST' && param_obj.arg) {
                 try {
-                    const user_id = mClass.getIDUserRegistr(param_obj.user);
+                    let user_id = mClass.getIDUserRegistr(param_obj.user) || param_obj.user.aid;
                     if (!user_id) {
                         throw new Error("Error: Please Login");
                     }
@@ -71,7 +71,7 @@ function get_body(param_obj) {
             // get status cart - return: number items in cart
             if (param_obj.method === 'GET' && param_obj.arg) {
                 try {
-                    const user_id = mClass.getIDUserRegistr(param_obj.user);
+                    const user_id = mClass.getIDUserRegistr(param_obj.user) || param_obj.user.aid;
                     if (!user_id) {
                         throw new Error("Error: Please Login");
                     }

@@ -6,6 +6,8 @@ import * as mClass from './_clases';
 
 const dbpath = path.join(__dirname, "../goo01.db");
 
+// select * from sqlite_master where type = 'trigger';
+// DROP TRIGGER validate_email_before_insert_leads;
 
 export async function db_CreateDataBase() {
 
@@ -50,7 +52,31 @@ export async function db_CreateDataBase() {
           id_user INTEGER NOT NULL,
           id_product INTEGER NOT NULL,
           sum INTEGER NOT NULL,
-          name VARCHAR(50) NOT NULL );
+          name VARCHAR(50) NOT NULL,
+          ordered INTEGER DEFAULT 0 NOT NULL,
+          mtime TIMESTAMP);
+          `,
+        (err) => {
+          if (err) {
+            reject(err);
+          }
+        });
+
+        db.run(`CREATE TRIGGER  IF NOT EXISTS carts_update AFTER  UPDATE ON carts
+        BEGIN
+          update carts SET mtime = datetime('now') WHERE id = new.id;
+        END;
+          `,
+        (err) => {
+          if (err) {
+            reject(err);
+          }
+        });
+
+        db.run(`CREATE TRIGGER  IF NOT EXISTS carts_insert AFTER  INSERT ON carts
+        BEGIN
+          update carts SET mtime = datetime('now') WHERE id = new.id;
+        END;
           `,
         (err) => {
           if (err) {
@@ -301,7 +327,7 @@ export async function db_CartList(user_id: number) {
       });
 
 
-    const query_str = 'select * from carts where id_user = ?';
+    const query_str = 'select * from carts where id_user = ? AND ordered <> 1';
 
     db.all(query_str, [user_id],
       (err, rows) => {
@@ -346,3 +372,59 @@ export async function db_CartDelProduct(a_id: number) {
   });
 
 }
+
+export async function db_CartToOrder(user_id: number) {
+
+  return new Promise(function (resolve, reject) {
+
+    const db = new sqlite3.Database(dbpath, sqlite3.OPEN_READWRITE,
+      (err) => {
+        if (err) {
+          reject(err);
+        }
+      });
+
+    db.run('UPDATE carts SET ordered=? WHERE id_user=? AND ordered <> 1',
+      [1, user_id],
+
+      (err) => {
+        if (err) {
+          reject(err);
+        } else {
+          resolve(1);
+        }
+      });
+
+    db.close();
+  })
+}
+
+
+export async function db_CartListOrdered(user_id: number) {
+
+  return new Promise(function (resolve, reject) {
+
+    const db = new sqlite3.Database(dbpath, sqlite3.OPEN_READWRITE,
+      (err) => {
+        if (err) {
+          reject(err);
+        }
+      });
+
+
+    const query_str = 'select * from carts where id_user = ? AND ordered = 1 order by mtime ASC';
+
+    db.all(query_str, [user_id],
+      (err, rows) => {
+        if (err) {
+          reject(err);
+        } else {
+          resolve(rows);
+        }
+      });
+
+    db.close();
+  });
+
+}
+

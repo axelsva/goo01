@@ -38,7 +38,7 @@
                 <% if (isUser) { %>
                 <div>
                     <form name="form_reg" id="form_reg" action="/user" method="POST">
-                        USER: <%= isUser %>
+                        USER: <%= isUser %> (<%= isUserID %> / <%= isUseraID %>)
                         <label><input id="<%= isUserID %>" type="hidden" name="id" value=""> </label><Br>
                         <br>
                         <input id="btn_logout" type="button" name="btn_logout"  value="Logout">
@@ -66,8 +66,9 @@
                 <div id="div_links">
                     <hr>
                     <div id="Cart">
-                        <a href="/cart">Cart</a></br>
                         <div id="CartStatus"> </div>
+                        <a href="/cart">Cart</a></br>
+                        <a href="/carthist">Order History</a></br>
                     </div>
                         <hr>
                         <a href="/">Home</a></br>

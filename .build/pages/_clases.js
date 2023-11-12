@@ -3,7 +3,7 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.send_order = exports.validate_param_order = exports.NewUserFromArray = exports.GetUser_FromCookies = exports.GetCookies_FromUser = exports.GetCookies_NULLUser = exports.validPassword = exports.setPassword = exports.ProductValidate = exports.NewProductFromArray = exports.isRoleAdmin = exports.getNameUserRegistr = exports.getIDUserRegistr = exports.get_html_product_img = exports.get_html_a_product = exports.get_html_a = exports.app_cfg = void 0;
+exports.send_order = exports.validate_param_order = exports.NewUserFromArray = exports.GetUser_FromCookies = exports.anon_GetCookies_FromUser = exports.GetCookies_FromUser = exports.GetCookies_NULLUser = exports.validPassword = exports.setPassword = exports.ProductValidate = exports.NewProductFromArray = exports.isRoleAdmin = exports.getNameUserRegistr = exports.getIDUserRegistr = exports.get_html_product_img = exports.get_html_a_product = exports.get_html_a = exports.app_cfg = void 0;
 const crypto_1 = __importDefault(require("crypto"));
 const cookie_1 = __importDefault(require("cookie"));
 const fs_1 = __importDefault(require("fs"));
@@ -117,8 +117,17 @@ function GetCookies_FromUser(a_id, a_name) {
     return cookie_1.default.serialize('s_uid', enc_text.toString(), { maxAge: exports.app_cfg.get('cookie_user_max_age') });
 }
 exports.GetCookies_FromUser = GetCookies_FromUser;
+function anon_GetCookies_FromUser(a_id) {
+    return cookie_1.default.serialize('a_uid', a_id.toString(), { maxAge: 60 * 60 * 24 * 365 });
+}
+exports.anon_GetCookies_FromUser = anon_GetCookies_FromUser;
 function GetUser_FromCookies(a_cookies) {
     //console.log(a_cookies);
+    const a_user = {
+        id: 0,
+        name: '',
+        aid: 0
+    };
     const cookies = cookie_1.default.parse(a_cookies);
     if (cookies && 's_uid' in cookies) {
         try {
@@ -126,14 +135,21 @@ function GetUser_FromCookies(a_cookies) {
             const str1 = str.split(',');
             const uArr = Uint8Array.from(str1, (x) => { return parseInt(x, 10); });
             const dec_obj = JSON.parse(new TextDecoder("utf-8").decode(uArr));
-            console.log("dec_obj", dec_obj);
-            return dec_obj || {};
+            a_user.id = dec_obj.id;
+            a_user.name = dec_obj.name;
         }
         catch (_a) {
-            return {};
         }
     }
-    return {};
+    if (cookies && 'a_uid' in cookies) {
+        try {
+            a_user.aid = Number(cookies['a_uid']);
+        }
+        catch (_b) {
+        }
+    }
+    console.log("a_user", a_user);
+    return a_user;
 }
 exports.GetUser_FromCookies = GetUser_FromCookies;
 function NewUserFromArray(a_user) {
