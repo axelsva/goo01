@@ -50,14 +50,16 @@ function get_body(param_obj) {
         if ('user' in param_obj) {
             _data.isAdmin = mClass.isRoleAdmin(param_obj.user);
         }
-        let a_name = "";
+        let a_name = '';
+        let a_articul = '';
         let a_price = 0;
         if (param_obj && ('arg' in param_obj)) {
             if (param_obj.arg && ('btn' in param_obj.arg)) {
                 switch (param_obj.arg.btn) {
                     case 'cmd_filtr':
-                        if (("name" in param_obj.arg) && ("price" in param_obj.arg)) {
+                        if (("name" in param_obj.arg) && ("price" in param_obj.arg) && ("articul" in param_obj.arg)) {
                             a_name = param_obj.arg.name;
+                            a_articul = param_obj.arg.articul;
                             a_price = param_obj.arg.price || 0;
                         }
                         break;
@@ -65,7 +67,7 @@ function get_body(param_obj) {
             }
         }
         let products_arr = [];
-        yield mDB.db_ProductList(a_name, a_price)
+        yield mDB.db_ProductList(a_name, a_articul, a_price)
             .then((_rows) => {
             const rows = _rows;
             rows.forEach((_row) => {

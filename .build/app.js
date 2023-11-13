@@ -35,18 +35,14 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-const https_1 = __importDefault(require("https"));
-const fs_1 = __importDefault(require("fs"));
+const http_1 = __importDefault(require("http"));
+//import fs from 'fs';
 const url_1 = __importDefault(require("url"));
 const querystring_1 = __importDefault(require("querystring"));
 const ejs_1 = __importDefault(require("ejs"));
 const mClass = __importStar(require("./pages/_clases"));
 function go_run() {
-    const options = {
-        key: fs_1.default.readFileSync('./key/key.pem'),
-        cert: fs_1.default.readFileSync('./key/cert.pem'),
-    };
-    https_1.default.createServer(options, (req, res) => __awaiter(this, void 0, void 0, function* () {
+    http_1.default.createServer((req, res) => __awaiter(this, void 0, void 0, function* () {
         let body = '';
         req.on('error', err => {
             console.error("ERROR REQ:", JSON.stringify(err));
@@ -127,6 +123,11 @@ function go_run() {
                     }
                     catch (_err) {
                         a_body = _err.message;
+                        if (a_body === 'db_CartToOrder') {
+                            res.writeHead(301, { 'Location': '/carthist' });
+                            res.end();
+                            return;
+                        }
                         console.error("srvRoute", _err);
                     }
                 }

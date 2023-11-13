@@ -75,11 +75,13 @@ function get_body(param_obj) {
                             }
                             order_fp = yield mClass.send_order(order_param, rows);
                             yield mDB.db_CartToOrder(user_id);
+                            throw new Error("db_CartToOrder");
                         }))
                             .catch((err) => { throw err; });
                     }
                     catch (err) {
-                        order_result = err.message;
+                        //order_result = (err as Error).message;
+                        throw err;
                     }
                 }
                 if (param_obj.arg.btn === 'cmd_del' && "id" in param_obj.arg) {

@@ -62,7 +62,7 @@ export async function db_CreateDataBase() {
           }
         });
 
-        db.run(`CREATE TRIGGER  IF NOT EXISTS carts_update AFTER  UPDATE ON carts
+      db.run(`CREATE TRIGGER  IF NOT EXISTS carts_update AFTER  UPDATE ON carts
         BEGIN
           update carts SET mtime = datetime('now') WHERE id = new.id;
         END;
@@ -73,7 +73,7 @@ export async function db_CreateDataBase() {
           }
         });
 
-        db.run(`CREATE TRIGGER  IF NOT EXISTS carts_insert AFTER  INSERT ON carts
+      db.run(`CREATE TRIGGER  IF NOT EXISTS carts_insert AFTER  INSERT ON carts
         BEGIN
           update carts SET mtime = datetime('now') WHERE id = new.id;
         END;
@@ -126,7 +126,7 @@ export async function db_ProductAdd(product: mClass.Product) {
 }
 
 
-export async function db_ProductList(a_name: string, a_price: number) {
+export async function db_ProductList(a_name: string, a_articul: string, a_price: number) {
 
   return new Promise(function (resolve, reject) {
 
@@ -137,36 +137,37 @@ export async function db_ProductList(a_name: string, a_price: number) {
         }
       });
 
-    let query_str = ''
-
-    if (a_name === '') {
-
-      query_str = 'select * from product order by name ASC';
-      db.all(query_str, [],
-
-        (err, rows) => {
-          if (err) {
-            reject(err);
-          } else {
-            resolve(rows);
-          }
-        });
+    let qp = [];
+    let qm = [];
+    if (a_name) {
+      qm.push('name LIKE ?');
+      qp.push('%'+a_name+'%');
+    }
+    if (a_articul) {
+      qm.push('articul = ?');
+      qp.push(a_articul);
+    }
+    if (a_price) {
+      qm.push('price >= ?');
+      qp.push(a_price);
     }
 
-    else {
+    let query_str = qm.join(' and ');
+    if (query_str) { query_str = 'where ' + query_str }
 
-      //console.log(a_name, a_price);
-      query_str = 'select * from product where name = ? and price  >= ? ';
+    query_str = 'select * from product ' + query_str + ' order by name ASC';
 
-      db.all(query_str, [a_name, a_price],
-        (err, rows) => {
-          if (err) {
-            reject(err);
-          } else {
-            resolve(rows);
-          }
-        });
-    }
+    console.log('query_str', query_str);
+
+    db.all(query_str, qp,
+
+      (err, rows) => {
+        if (err) {
+          reject(err);
+        } else {
+          resolve(rows);
+        }
+      });
 
     db.close();
   })
@@ -412,7 +413,7 @@ export async function db_CartListOrdered(user_id: number) {
       });
 
 
-    const query_str = 'select * from carts where id_user = ? AND ordered = 1 order by mtime ASC';
+    const query_str = "select ID, id_product, sum, name, ordered, datetime( mtime, 'localtime') as mtime  from carts where id_user = ? AND ordered = 1 order by mtime ASC";
 
     db.all(query_str, [user_id],
       (err, rows) => {

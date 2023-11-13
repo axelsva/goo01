@@ -114,7 +114,7 @@ function db_ProductAdd(product) {
     });
 }
 exports.db_ProductAdd = db_ProductAdd;
-function db_ProductList(a_name, a_price) {
+function db_ProductList(a_name, a_articul, a_price) {
     return __awaiter(this, void 0, void 0, function* () {
         return new Promise(function (resolve, reject) {
             const db = new sqlite3_1.default.Database(dbpath, sqlite3_1.default.OPEN_READWRITE, (err) => {
@@ -122,30 +122,34 @@ function db_ProductList(a_name, a_price) {
                     reject(err);
                 }
             });
-            let query_str = '';
-            if (a_name === '') {
-                query_str = 'select * from product order by name ASC';
-                db.all(query_str, [], (err, rows) => {
-                    if (err) {
-                        reject(err);
-                    }
-                    else {
-                        resolve(rows);
-                    }
-                });
+            let qp = [];
+            let qm = [];
+            if (a_name) {
+                qm.push('name LIKE ?');
+                qp.push('%' + a_name + '%');
             }
-            else {
-                //console.log(a_name, a_price);
-                query_str = 'select * from product where name = ? and price  >= ? ';
-                db.all(query_str, [a_name, a_price], (err, rows) => {
-                    if (err) {
-                        reject(err);
-                    }
-                    else {
-                        resolve(rows);
-                    }
-                });
+            if (a_articul) {
+                qm.push('articul = ?');
+                qp.push(a_articul);
             }
+            if (a_price) {
+                qm.push('price >= ?');
+                qp.push(a_price);
+            }
+            let query_str = qm.join(' and ');
+            if (query_str) {
+                query_str = 'where ' + query_str;
+            }
+            query_str = 'select * from product ' + query_str + ' order by name ASC';
+            console.log('query_str', query_str);
+            db.all(query_str, qp, (err, rows) => {
+                if (err) {
+                    reject(err);
+                }
+                else {
+                    resolve(rows);
+                }
+            });
             db.close();
         });
     });
@@ -336,7 +340,7 @@ function db_CartListOrdered(user_id) {
                     reject(err);
                 }
             });
-            const query_str = 'select * from carts where id_user = ? AND ordered = 1 order by mtime ASC';
+            const query_str = "select ID, id_product, sum, name, ordered, datetime( mtime, 'localtime') as mtime  from carts where id_user = ? AND ordered = 1 order by mtime ASC";
             db.all(query_str, [user_id], (err, rows) => {
                 if (err) {
                     reject(err);

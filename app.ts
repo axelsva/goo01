@@ -1,5 +1,5 @@
-import https from 'https';
-import fs from 'fs';
+import http from 'http';
+//import fs from 'fs';
 import url from 'url';
 import qs from 'querystring';
 import ejs from 'ejs';
@@ -10,13 +10,8 @@ import * as mClass from './pages/_clases';
 
 function go_run() {
 
-  const options = {
-    key: fs.readFileSync('./key/key.pem'),
-    cert: fs.readFileSync('./key/cert.pem'),
-  };
 
-
-  https.createServer(options, async (req, res) => {
+  http.createServer(async (req, res) => {
 
     let body = '';
 
@@ -47,7 +42,7 @@ function go_run() {
         method: "" + req.method,
         url: "" + req.url,
         pathname: "",
-        user: {id:0, name:'', aid:0},
+        user: { id: 0, name: '', aid: 0 },
         arg: {},
       };
 
@@ -58,7 +53,7 @@ function go_run() {
       if (req.method === 'GET') {
         param_obj.arg = url_obj.query;
       }
-      else  {
+      else {
         param_obj.arg = qs.parse(body);
       }
 
@@ -128,6 +123,12 @@ function go_run() {
 
         } catch (_err) {
           a_body = (_err as Error).message;
+          if (a_body === 'db_CartToOrder') {
+            res.writeHead(301, { 'Location': '/carthist' });
+            res.end();
+            return;
+          }
+
           console.error("srvRoute", _err);
         }
 
@@ -136,10 +137,10 @@ function go_run() {
 
       }
 
-      const result = ejs.render(a_page, {glBody: a_body});
+      const result = ejs.render(a_page, { glBody: a_body });
 
-      res.writeHead(200, { 
-        'Content-Type': 'text/html; charset=utf-8' , 
+      res.writeHead(200, {
+        'Content-Type': 'text/html; charset=utf-8',
         'Set-Cookie': mClass.anon_GetCookies_FromUser(param_obj.user.aid)
       });
       res.write(result);

@@ -22,7 +22,8 @@ export async function get_body(param_obj: mClass.RouteParam) {
 
 
 
-    let a_name = "";
+    let a_name = '';
+    let a_articul = '';
     let a_price = 0;
 
     if (param_obj && ('arg' in param_obj)) {
@@ -30,8 +31,9 @@ export async function get_body(param_obj: mClass.RouteParam) {
 
             switch (param_obj.arg.btn) {
                 case 'cmd_filtr':
-                    if (("name" in param_obj.arg) && ("price" in param_obj.arg)) {
+                    if (("name" in param_obj.arg) && ("price" in param_obj.arg) && ("articul" in param_obj.arg)) {
                         a_name = param_obj.arg.name as string;
+                        a_articul = param_obj.arg.articul as string;
                         a_price = param_obj.arg.price as number || 0;
                     }
                     break;
@@ -41,7 +43,7 @@ export async function get_body(param_obj: mClass.RouteParam) {
 
     let products_arr: Array<mClass.Product> = [];
 
-    await mDB.db_ProductList(a_name, a_price)
+    await mDB.db_ProductList(a_name, a_articul, a_price)
         .then((_rows) => {
 
             const rows = _rows as [];

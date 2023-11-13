@@ -54,12 +54,15 @@ export async function get_body(param_obj: mClass.RouteParam) {
 
                             order_fp = await mClass.send_order(order_param, rows);
                             await mDB.db_CartToOrder(user_id);
+
+                            throw new Error("db_CartToOrder");
                             
                         })
                         .catch( (err) => { throw err } );
 
                 } catch (err) {
-                    order_result = (err as Error).message;
+                    //order_result = (err as Error).message;
+                    throw err 
                 }
             }
 
