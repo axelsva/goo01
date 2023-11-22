@@ -19,7 +19,7 @@ export async function get_body(param_obj: mClass.RouteParam) {
     let ssum = 0;
 
 
-    const user_id = mClass.getIDUserRegistr(param_obj.user) || param_obj.user.aid;
+    const user_id = mClass.getIDUserRegistr(param_obj.user) || 0;
     if (!user_id) {
         throw new Error("Error: Please Login");
     }

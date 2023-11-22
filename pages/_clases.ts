@@ -75,12 +75,14 @@ export function get_html_a_product(a_product: Product) {
 
 
 export function get_html_product_img(a_id: number) {
+//    const stub = "/upload/stub.jpg";
     const stub = "/upload/stub.jpg";
     let result = "" + stub;
 
     const a_num = a_id as number || 0;
     const fp = `/upload/${a_num}.jpg`;
-    const filePath = path.join(__dirname, '..' + fp);
+    const filePath = path.join(__dirname, '../.build' + fp);
+
 
     // check exist file
     try {
@@ -90,6 +92,9 @@ export function get_html_product_img(a_id: number) {
     catch {
         //console.log("get_html_product_img");
     };
+
+
+    //console.log("IMG", result);
 
     return result;
 }
@@ -309,7 +314,7 @@ export function send_order(order_param: ParamOrder, rows: []) {
 
 
     const fp = `/upload/${order_param.user}-${Date.now()}.txt`;
-    const filePath = path.join(__dirname, '..' + fp);
+    const filePath = path.join(__dirname, '../.build' + fp);
 
     fs.writeFileSync(filePath, result, 'utf8');
 

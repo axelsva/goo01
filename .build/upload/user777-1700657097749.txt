@@ -1,0 +1,11 @@
+
+        Date:   22.11.2023, 15:44:57
+        User: user777
+        Tel:  7777777
+        Email:  test@ya.ru
+        Comment:  
+        Address:  Кировская область, Слободской район, Ленинское сельское поселение
+        Order Sum:  47 руб
+        Delivery Sum:  290 руб
+    
+ITEM: 0 - Name: Товар ССС, ProdID: 4, Sum: 47 руб

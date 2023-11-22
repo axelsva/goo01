@@ -30,7 +30,7 @@ export async function get_body(param_obj: mClass.RouteParam) {
 
     if (param_obj && ('user' in param_obj)) {
 
-        const user_id = mClass.getIDUserRegistr(param_obj.user) || param_obj.user.aid;
+        const user_id = param_obj.user.aid  || mClass.getIDUserRegistr(param_obj.user);
         if (!user_id) {
             throw new Error("Error: Please Login");
         }
@@ -40,6 +40,11 @@ export async function get_body(param_obj: mClass.RouteParam) {
             if (param_obj.arg.btn === 'cmd_order') {
 
                 try {
+
+                    const user_id0 = mClass.getIDUserRegistr(param_obj.user) || 0;
+                    if (!user_id0) {
+                        throw new Error("Please Login to bay");
+                    }                    
 
                     const order_param = mClass.validate_param_order(param_obj.arg);
                     order_param.user = mClass.getNameUserRegistr(param_obj.user);
@@ -53,7 +58,7 @@ export async function get_body(param_obj: mClass.RouteParam) {
                             }
 
                             order_fp = await mClass.send_order(order_param, rows);
-                            await mDB.db_CartToOrder(user_id);
+                            await mDB.db_CartToOrder(user_id, user_id0);
 
                             throw new Error("db_CartToOrder");
                             

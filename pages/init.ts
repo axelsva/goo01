@@ -100,6 +100,20 @@ export async function get_body(param_obj: mClass.RouteParam) {
                     }
 
                     break;
+
+                case 'cmd_dbClearCarts':
+                    try {
+
+                        await mDB.db_ClearCarts()
+                            .then(() => { _data.msg = 'Carts cleared ' })
+                            .catch((err) => { throw err });
+
+                    } catch (err) {
+                        throw err;
+                    }
+
+                    break;
+
             }
         }
     }
@@ -109,7 +123,7 @@ export async function get_body(param_obj: mClass.RouteParam) {
     _address.push('localhost');
     _data.msg += await get_QR(_address);
 
-    
+
 
     await ejs.renderFile('./pages/init.ejs', _data, {}, function (err, str) {
         if (err)

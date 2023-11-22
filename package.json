@@ -1,10 +1,11 @@
 {
   "name": "goo01",
   "version": "1.0.0",
-  "main": "app.js",
+  "main": "app.ts",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
-    "start": "tsc && node ./.build/app.js",
+    "start": "ts-node app.ts",
+    "start_build": "tsc && node ./.build/app.js",
     "build": "tsc --build",
     "clean": "tsc --build --clean"
   },
@@ -14,23 +15,19 @@
   "description": "",
   "devDependencies": {
     "@tinkoff/typescript-config": "^1.53.1",
-    "@tsconfig/node18": "^18.2.2",
-    "@types/node": "^20.6.3",
-    "@types/qrcode": "^1.5.4",
-    "@typescript-eslint/eslint-plugin": "^6.6.0",
-    "@typescript-eslint/parser": "^6.6.0",
-    "eslint": "^8.48.0",
-    "ts-node": "^10.9.1",
-    "typescript": "^5.2.2"
+    "@types/node": "^20.9.4",
+    "@types/qrcode": "^1.5.5",
+    "eslint": "^8.54.0"
   },
   "dependencies": {
     "@tinkoff/eslint-config": "^1.54.4",
-    "@types/cookie": "^0.5.3",
-    "@types/ejs": "^3.1.4",
+    "@types/cookie": "^0.5.4",
+    "@types/ejs": "^3.1.5",
     "cookie": "^0.5.0",
     "ejs": "^3.1.9",
-    "npm": "^10.1.0",
     "qrcode": "^1.5.3",
-    "sqlite3": "^5.1.6"
+    "sqlite3": "^5.1.6",
+    "ts-node": "^10.9.1",
+    "typescript": "^5.3.2"
   }
 }

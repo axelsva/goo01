@@ -3,8 +3,12 @@ import path from 'path';
 
 import * as mClass from './_clases';
 
+// tsc-build
+//const dbpath = path.join(__dirname, "../goo01.db");
 
-const dbpath = path.join(__dirname, "../goo01.db");
+// ts-node
+const dbpath = path.join(__dirname, "../.build/goo01.db");
+
 
 // select * from sqlite_master where type = 'trigger';
 // DROP TRIGGER validate_email_before_insert_leads;
@@ -130,6 +134,8 @@ export async function db_ProductList(a_name: string, a_articul: string, a_price:
 
   return new Promise(function (resolve, reject) {
 
+    //console.log("dbpath", dbpath);
+
     const db = new sqlite3.Database(dbpath, sqlite3.OPEN_READWRITE,
       (err) => {
         if (err) {
@@ -141,7 +147,7 @@ export async function db_ProductList(a_name: string, a_articul: string, a_price:
     let qm = [];
     if (a_name) {
       qm.push('name LIKE ?');
-      qp.push('%'+a_name+'%');
+      qp.push('%' + a_name + '%');
     }
     if (a_articul) {
       qm.push('articul = ?');
@@ -374,7 +380,7 @@ export async function db_CartDelProduct(a_id: number) {
 
 }
 
-export async function db_CartToOrder(user_id: number) {
+export async function db_CartToOrder(user_id: number, user_id0: number) {
 
   return new Promise(function (resolve, reject) {
 
@@ -385,8 +391,8 @@ export async function db_CartToOrder(user_id: number) {
         }
       });
 
-    db.run('UPDATE carts SET ordered=? WHERE id_user=? AND ordered <> 1',
-      [1, user_id],
+    db.run('UPDATE carts SET ordered=?, id_user=? WHERE id_user=? AND ordered <> 1',
+      [1, user_id0, user_id],
 
       (err) => {
         if (err) {
@@ -428,4 +434,34 @@ export async function db_CartListOrdered(user_id: number) {
   });
 
 }
+
+
+export async function db_ClearCarts() {
+
+  return new Promise(function (resolve, reject) {
+
+    const db = new sqlite3.Database(dbpath, sqlite3.OPEN_READWRITE,
+      (err) => {
+        if (err) {
+          reject(err);
+        }
+      });
+
+    const query_str = "delete from carts ";
+
+    db.all(query_str, [],
+      (err, rows) => {
+        if (err) {
+          reject(err);
+        } else {
+          resolve(rows);
+        }
+      });
+
+    db.close();
+  });
+
+}
+
+
 

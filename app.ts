@@ -110,7 +110,7 @@ function go_run() {
       srvRoute.set('/carthist', './pages/carthistory');
 
 
-      const defaultPage = await import("./pages/_default.js");
+      const defaultPage = await import("./pages/_default");
       let a_page = await defaultPage.getPage(param_obj);
 
       let a_body = "";
