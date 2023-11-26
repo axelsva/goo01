@@ -12,7 +12,8 @@
     <form name="form_product_filtr" id="form_product_filtr" action="/product" method="GET">
         Фильтр:<input type="text" name="name" value="">
         арт <input type="text" name="articul" value="">
-        цена >= <input type="number" name="price" value="">
+        цена от <input type="number" name="price_min" value="">
+        по <input type="number" name="price_max" value="">
         <button value=cmd_filtr type="submit" name="btn" formaction="/product">Отфильтровать</button>
     </form>
 </div>

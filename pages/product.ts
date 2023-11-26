@@ -24,18 +24,25 @@ export async function get_body(param_obj: mClass.RouteParam) {
 
     let a_name = '';
     let a_articul = '';
-    let a_price = 0;
+    let a_price_min = 0;
+    let a_price_max = 1000000;
+
 
     if (param_obj && ('arg' in param_obj)) {
         if (param_obj.arg && ('btn' in param_obj.arg)) {
 
             switch (param_obj.arg.btn) {
                 case 'cmd_filtr':
-                    if (("name" in param_obj.arg) && ("price" in param_obj.arg) && ("articul" in param_obj.arg)) {
-                        a_name = param_obj.arg.name as string;
-                        a_articul = param_obj.arg.articul as string;
-                        a_price = param_obj.arg.price as number || 0;
+
+                    a_name = ("name" in param_obj.arg) ? '' + param_obj.arg.name : '';
+                    a_articul = ("articul" in param_obj.arg) ? '' + param_obj.arg.articul : '';
+                    a_price_min = ("price_min" in param_obj.arg) ? parseInt( (param_obj.arg.price_min as string), 10) || a_price_min: a_price_min;
+                    a_price_max = ("price_max" in param_obj.arg) ? parseInt( (param_obj.arg.price_max as string), 10) || a_price_max: a_price_max;
+
+                    if (a_price_min > a_price_max) {
+                        a_price_min = a_price_max;
                     }
+
                     break;
             }
         }
@@ -43,7 +50,7 @@ export async function get_body(param_obj: mClass.RouteParam) {
 
     let products_arr: Array<mClass.Product> = [];
 
-    await mDB.db_ProductList(a_name, a_articul, a_price)
+    await mDB.db_ProductList(a_name, a_articul, a_price_min, a_price_max)
         .then((_rows) => {
 
             const rows = _rows as [];
@@ -59,7 +66,7 @@ export async function get_body(param_obj: mClass.RouteParam) {
         })
         .catch((err) => { throw err });
 
- 
+
     _data.products = products_arr as [];
     await ejs.renderFile('./pages/product.ejs', _data, {}, function (err, str) {
         if (err)

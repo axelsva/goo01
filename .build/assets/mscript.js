@@ -1,5 +1,3 @@
-console.log("кукареку");
-
 
 function User_Login() {
 
@@ -46,6 +44,7 @@ function User_Login() {
             () => { User_LogOut(); }
         )
 }
+
 
 function User_Register(event) {
 
@@ -121,7 +120,8 @@ function Add_ToCart(a_ID, a_sum, a_name) {
             if (data.result === "ok") {
 
                 console.log(data.data);
-                //div_status.innerHTML = "" + data_reg.get("name") + " - user registered";
+                
+                CartStatus();
 
             } else if (data.result === "error") {
                 div_status.innerHTML = "" + data.message;
@@ -131,6 +131,8 @@ function Add_ToCart(a_ID, a_sum, a_name) {
 
             }
         })
+
+    
 }
 
 function CartStatus() {
@@ -153,8 +155,12 @@ function CartStatus() {
 
                 if (data.result === "ok") {
 
-                    //console.log(data.data);
-                    div_CartStatus.innerHTML = 'items in cart: ' + data.data;
+                    if (data.data) {
+                        div_CartStatus.innerHTML = 'items in cart: ' + data.data;    
+                    } else {
+                        div_CartStatus.innerHTML = '';
+                    }
+                    
 
                 } else if (data.result === "error") {
                     //div_CartStatus.innerHTML = "" + data.message;
@@ -169,7 +175,7 @@ function CartStatus() {
 
     }
 
-    setTimeout(CartStatus, 2000);
+    //setTimeout(CartStatus, 2000);
 }
 
 document.addEventListener("DOMContentLoaded", () => {
@@ -186,7 +192,7 @@ document.addEventListener("DOMContentLoaded", () => {
         btn_LogOut.addEventListener('click', User_LogOut);
     }
 
-    setTimeout(CartStatus, 2000);
+    setTimeout(CartStatus);
 
 
 });

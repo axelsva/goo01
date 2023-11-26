@@ -196,6 +196,13 @@ input[name="price"] {
     width: 70px;
 }
 
+input[name="price_min"] {
+    width: 70px;
+}
+
+input[name="price_max"] {
+    width: 70px;
+}
 
 
 button,input[type="button"],input[type="submit"] {
@@ -211,6 +218,8 @@ button,input[type="button"],input[type="submit"] {
     border: solid 1px;
     margin: 0px 0px 4px 0px;
 }
+
+
 
 
 h1 {

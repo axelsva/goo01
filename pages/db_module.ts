@@ -130,7 +130,7 @@ export async function db_ProductAdd(product: mClass.Product) {
 }
 
 
-export async function db_ProductList(a_name: string, a_articul: string, a_price: number) {
+export async function db_ProductList(a_name: string, a_articul: string, a_price_min: number, a_price_max: number) {
 
   return new Promise(function (resolve, reject) {
 
@@ -153,17 +153,20 @@ export async function db_ProductList(a_name: string, a_articul: string, a_price:
       qm.push('articul = ?');
       qp.push(a_articul);
     }
-    if (a_price) {
+
       qm.push('price >= ?');
-      qp.push(a_price);
-    }
+      qp.push(a_price_min);
+
+      qm.push('price <= ?');
+      qp.push(a_price_max);
+
 
     let query_str = qm.join(' and ');
     if (query_str) { query_str = 'where ' + query_str }
 
     query_str = 'select * from product ' + query_str + ' order by name ASC';
 
-    console.log('query_str', query_str);
+    console.log('query_str', query_str, qp);
 
     db.all(query_str, qp,
 
