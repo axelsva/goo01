@@ -30,7 +30,9 @@ function init() {
         });
     // Пользователь сможет построить только автомобильный маршрут.
     routePanelControl.routePanel.options.set({
-        types: {auto: true}
+        types: {auto: true},
+        reverseGeocoding: true
+
     });
 
     // Если вы хотите задать неизменяемую точку "откуда", раскомментируйте код ниже.

@@ -13,7 +13,7 @@ export async function get_body(param_obj: mClass.RouteParam) {
 
             try {
 
-                let user_id =  param_obj.user.aid  || mClass.getIDUserRegistr(param_obj.user);
+                let user_id = mClass.getIDUserRegistr(param_obj.user) || param_obj.user.aid;
                 if (!user_id) {
                     throw new Error("Error: Please Login");
                 }
@@ -53,27 +53,26 @@ export async function get_body(param_obj: mClass.RouteParam) {
 
             try {
 
-                const user_id = param_obj.user.aid ||  mClass.getIDUserRegistr(param_obj.user) ;
-                if (!user_id) {
-                    throw new Error("Error: Please Login");
+                //const user_id = mClass.getIDUserRegistr(param_obj.user) || param_obj.user.aid;
+                // if (!user_id) {
+                //     throw new Error("Error: Please Login");
+                // }
+
+                let count_item = 0;
+
+                if (mClass.getIDUserRegistr(param_obj.user)) {
+                    count_item += (await mDB.db_CartList(mClass.getIDUserRegistr(param_obj.user)) as []).length;
                 }
 
-                await mDB.db_CartList(user_id)
-                    .then((_data) => {
+                if (param_obj.user.aid)  {
+                    count_item += (await mDB.db_CartList(param_obj.user.aid) as []).length;
+                }
 
-                        const data = _data as [];
+                result = {
+                    "result": "ok",
+                    "data": count_item
+                }
 
-                        //console.log(data);
-
-                        result = {
-                            "result": "ok",
-                            "data": data.length
-                        }
-                    })
-
-                    .catch((err) => {
-                        result = { "result": "error", "message": (err as Error).message }
-                    });
 
             } catch (err) {
                 result = { "result": "error", "message": (err as Error).message };

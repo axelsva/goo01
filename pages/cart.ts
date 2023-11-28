@@ -30,7 +30,7 @@ export async function get_body(param_obj: mClass.RouteParam) {
 
     if (param_obj && ('user' in param_obj)) {
 
-        const user_id = param_obj.user.aid  || mClass.getIDUserRegistr(param_obj.user);
+        const user_id = param_obj.user.aid || mClass.getIDUserRegistr(param_obj.user);
         if (!user_id) {
             throw new Error("Error: Please Login");
         }
@@ -44,30 +44,30 @@ export async function get_body(param_obj: mClass.RouteParam) {
                     const user_id0 = mClass.getIDUserRegistr(param_obj.user) || 0;
                     if (!user_id0) {
                         throw new Error("Please Login to bay");
-                    }                    
+                    }
 
                     const order_param = mClass.validate_param_order(param_obj.arg);
                     order_param.user = mClass.getNameUserRegistr(param_obj.user);
 
-                    await mDB.db_CartList(user_id)
+                    await mDB.db_CartList(user_id0)
                         .then(async (_rows) => {
 
                             const rows = _rows as [];
-                            if (rows.length == 0 ) {
+                            if (rows.length == 0) {
                                 throw new Error("Error: Cart empty");
                             }
 
                             order_fp = await mClass.send_order(order_param, rows);
-                            await mDB.db_CartToOrder(user_id, user_id0);
+                            await mDB.db_CartToOrder(user_id0, user_id0);
 
                             throw new Error("db_CartToOrder");
-                            
+
                         })
-                        .catch( (err) => { throw err } );
+                        .catch((err) => { throw err });
 
                 } catch (err) {
                     //order_result = (err as Error).message;
-                    throw err 
+                    throw err
                 }
             }
 
@@ -79,22 +79,39 @@ export async function get_body(param_obj: mClass.RouteParam) {
 
         }
 
-        await mDB.db_CartList(user_id)
-            .then((_rows) => {
+        let rows = [];
 
-                const rows = _rows as [];
+        if (param_obj.user.aid) {
 
-                rows.forEach((_row) => {
+            let rows = await mDB.db_CartList(param_obj.user.aid) as [];
 
-                    const row = _row as mClass.CartItem;
-                    row.src = mClass.get_html_product_img(row.id_product);
-                    row.RUR = mClass.app_cfg.get('RUR');
+            rows.forEach((_row) => {
 
-                    cartitems_arr.push(_row);
-                    ssum += row.sum;
-                });
-            })
-            .catch((err) => { throw err });
+                const row = _row as mClass.CartItem;
+                row.src = mClass.get_html_product_img(row.id_product);
+                row.RUR = mClass.app_cfg.get('RUR');
+
+                cartitems_arr.push(_row);
+                ssum += row.sum;
+            });
+        }
+
+
+        if (mClass.getIDUserRegistr(param_obj.user)) {
+
+            rows = await mDB.db_CartList(mClass.getIDUserRegistr(param_obj.user)) as [];
+
+            rows.forEach((_row) => {
+
+                const row = _row as mClass.CartItem;
+                row.src = mClass.get_html_product_img(row.id_product);
+                row.RUR = mClass.app_cfg.get('RUR');
+
+                cartitems_arr.push(_row);
+                ssum += row.sum;
+            });
+        }
+
 
     } else {
         throw new Error("Error: Please Login");

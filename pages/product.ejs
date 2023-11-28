@@ -10,10 +10,10 @@
 
 <div class="RoundRectDark">
     <form name="form_product_filtr" id="form_product_filtr" action="/product" method="GET">
-        Фильтр:<input type="text" name="name" value="">
-        арт <input type="text" name="articul" value="">
-        цена от <input type="number" name="price_min" value="">
-        по <input type="number" name="price_max" value="">
+        Фильтр:<input type="text" name="name" value="<%= filtrs.a_name %>">
+        арт <input type="text" name="articul" value="<%= filtrs.a_articul %>">
+        цена от <input type="number" name="price_min" value="<%= filtrs.a_price_min %>">
+        до <input type="number" name="price_max" value="<%= filtrs.a_price_max %>">
         <button value=cmd_filtr type="submit" name="btn" formaction="/product">Отфильтровать</button>
     </form>
 </div>

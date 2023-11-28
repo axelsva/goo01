@@ -435,7 +435,33 @@ export async function db_CartListOrdered(user_id: number) {
 
     db.close();
   });
+}
 
+
+export async function db_MergeCart(user_id: number, user_id0: number) {
+
+  return new Promise(function (resolve, reject) {
+
+    const db = new sqlite3.Database(dbpath, sqlite3.OPEN_READWRITE,
+      (err) => {
+        if (err) {
+          reject(err);
+        }
+      });
+
+    db.run('UPDATE carts SET id_user=? WHERE id_user=? AND ordered <> 1',
+      [ user_id0, user_id],
+
+      (err) => {
+        if (err) {
+          reject(err);
+        } else {
+          resolve(1);
+        }
+      });
+
+    db.close();
+  })
 }
 
 
@@ -463,6 +489,34 @@ export async function db_ClearCarts() {
 
     db.close();
   });
+}
+
+
+  export async function db_getProductPriceMinMax() {
+
+    return new Promise(function (resolve, reject) {
+  
+      const db = new sqlite3.Database(dbpath, sqlite3.OPEN_READWRITE,
+        (err) => {
+          if (err) {
+            reject(err);
+          }
+        });
+  
+      const query_str = "SELECT  MIN(price) as price_min, MAX(price) as price_max FROM product; ";
+  
+      db.all(query_str, [],
+        (err, rows) => {
+          if (err) { 
+            reject(err);
+          } else {
+            resolve(rows);
+          }
+        });
+  
+      db.close();
+    });
+  
 
 }
 

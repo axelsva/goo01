@@ -16,11 +16,17 @@ export async function get_body(param_obj: mClass.RouteParam) {
                     const a_user = mClass.NewUserFromArray(param_obj.arg);
 
                     await mDB.db_UserGet(a_user.name)
-                        .then((data) => {
+                        .then(async (data) => {
                             const db_user = data as mClass.User;
 
                             if (db_user) {
                                 if (mClass.validPassword(a_user.psw, db_user.salt, db_user.hash)) {
+
+                    
+                                    if (param_obj.user.aid)  {
+                                        console.log("Merge carts", param_obj.user.aid, db_user.ID);
+                                        await mDB.db_MergeCart( param_obj.user.aid, db_user.ID);
+                                    }                                    
 
 
                                     const cook = mClass.GetCookies_FromUser(db_user.ID, db_user.name)
