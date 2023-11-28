@@ -8,30 +8,38 @@ function init() {
         myMap = new ymaps.Map('map', {
             center: [58.60336542074188, 49.66828333142079],
             zoom: 9,
-            controls: []
+            controls: ['smallMapDefaultSet']
         }),
+
     // Создадим панель маршрутизации.
         routePanelControl = new ymaps.control.RoutePanel({
             options: {
                 // Добавим заголовок панели.
                 showHeader: true,
-                title: 'Расчёт доставки'
-            }
-        }),
-        zoomControl = new ymaps.control.ZoomControl({
-            options: {
-                size: 'small',
-                float: 'none',
+                title: 'Расчёт доставки',
+                autofocus: false, 
                 position: {
-                    bottom: 145,
-                    right: 10
+                    left: 100,
+                    top: 10
                 }
             }
-        });
+        })
+        //,
+        // zoomControl = new ymaps.control.ZoomControl({
+        //     options: {
+        //         size: 'small',
+        //         float: 'none',
+        //         position: {
+        //             bottom: 145,
+        //             right: 10
+        //         }
+        //     }
+        // });
+
     // Пользователь сможет построить только автомобильный маршрут.
+    //reverseGeocoding: true
     routePanelControl.routePanel.options.set({
         types: {auto: true},
-        reverseGeocoding: true
 
     });
 
@@ -41,7 +49,8 @@ function init() {
         from: 'Киров, Московская улица, 36'
      });
 
-    myMap.controls.add(routePanelControl).add(zoomControl);
+    //myMap.controls.add(routePanelControl).add(zoomControl);
+    myMap.controls.add(routePanelControl);
 
     // Получим ссылку на маршрут.
     routePanelControl.routePanel.getRouteAsync().then(function (route) {
